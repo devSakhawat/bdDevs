@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 //builder.Services.AddInfrastructure(builder.Configuration).AddApplicationServices().AddSignalR().Services.AddControllers();
 // alternatively, to keep it more organized:
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddApplicationServices();
+//builder.Services.AddApplicationServices();
+builder.Services.AddApplicationServices(typeof(bdDevs.Application.Common.Behaviors.ValidationBehavior<,>));
 builder.Services.AddSignalR();
 builder.Services.AddControllers();
 
