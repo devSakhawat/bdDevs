@@ -1,0 +1,35 @@
+@* ╔══════════════════════════════════════════════════
+   ║  _PageHeader.cshtml — Page title + actions bar
+   ║  Usage in views:
+   ║    ViewData["Title"] = "Lead List";
+   ║    ViewData["PageSubtitle"] = "Manage all CRM leads";
+   ║    ViewData["PageActions"] = Html.Raw(...)  OR use section
+   ╚══════════════════════════════════════════════════ *@
+
+@{
+    var title = ViewData["Title"]?.ToString();
+    var subtitle = ViewData["PageSubtitle"]?.ToString();
+    var hasHeader = !string.IsNullOrEmpty(title);
+}
+
+@if (hasHeader)
+{
+    <div class="bd-page-header" id="bdPageHeader">
+        <div class="bd-page-header-left">
+            @if (!string.IsNullOrEmpty(ViewData["PageIcon"]?.ToString()))
+            {
+                <div class="bd-page-icon">@Html.Raw(ViewData["PageIcon"])</div>
+            }
+            <div class="bd-page-titles">
+                <h1 class="bd-page-title">@title</h1>
+                @if (!string.IsNullOrEmpty(subtitle))
+                {
+                    <p class="bd-page-subtitle">@subtitle</p>
+                }
+            </div>
+        </div>
+        <div class="bd-page-header-right" id="bdPageActions">
+            @await RenderSectionAsync("PageActions", required: false)
+        </div>
+    </div>
+}

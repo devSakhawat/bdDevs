@@ -2,7 +2,7 @@
 
 /// <summary>
 /// Provides extension methods for <see cref="IServiceCollection"/> to configure Swagger/OpenAPI 
-/// for the bdDevCRM platform.
+/// for the bdDevs platform.
 /// </summary>
 public static class SwaggerServiceExtensions
 {
@@ -23,7 +23,7 @@ public static class SwaggerServiceExtensions
 			// Configure the main OpenAPI document metadata
 			opt.SwaggerDoc("v1", new OpenApiInfo
 			{
-				Title = "bdDevCRM API",
+				Title = "bdDevs API",
 				Version = "v1",
 				Description = "Enterprise CRM + HR/Payroll Platform"
 			});

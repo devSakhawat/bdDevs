@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
-namespace bdDevs.Api.Hubs;
+namespace bdDevs.Infrastructure.Hubs;
 
 [Authorize]
 public class NotificationHub : Hub
@@ -20,7 +20,6 @@ public class NotificationHub : Hub
 		await base.OnConnectedAsync();
 	}
 
-	// Client calls this to join a group manually
 	public async Task JoinGroup(string groupName) =>
 			await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
 }

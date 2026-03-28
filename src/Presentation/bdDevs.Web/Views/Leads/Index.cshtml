@@ -1,0 +1,21 @@
+﻿<!-- Views/Lead/Index.cshtml -->
+@{
+  Layout = "_Layout";
+}
+
+@await Html.PartialAsync("~/Views/Templates/_GridPageShell.cshtml")
+
+@section GridToolbar {
+  <button class="k-button k-button-solid-primary"
+          onclick="bdShowForm('New Lead')">
+    <i class="fa-solid fa-plus me-1"></i> New Lead
+  </button>
+  <button class="k-button k-button-solid-base"
+          id="btn-export">
+    <i class="fa-solid fa-download me-1"></i> Export
+  </button>
+}
+
+@section FormContent {
+  @await Html.PartialAsync("_LeadForm")
+}

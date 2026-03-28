@@ -1,0 +1,120 @@
+@* ╔══════════════════════════════════════════════════════════════════
+   ║  _GridPageShell.cshtml — Reusable Grid Page Template
+   ║
+   ║  Usage in a view:
+   ║
+   ║  @{
+   ║      ViewData["Title"] = "Lead List";
+   ║      ViewData["Module"] = "CRM";
+   ║      ViewData["BreadcrumbItems"] = new List<BreadcrumbItem>
+   ║      {
+   ║          new("CRM", "/crm"),
+   ║          new("Leads", null)
+   ║      };
+   ║      Layout = "~/Views/Shared/_Layout.cshtml";
+   ║  }
+   ║
+   ║  @section PageActions {
+   ║      <button class="bd-btn bd-btn-primary" id="btnNew">
+   ║          + New Lead
+   ║      </button>
+   ║  }
+   ║
+   ║  @await Html.PartialAsync("~/Views/Templates/_GridPageShell.cshtml")
+   ║
+   ║  @section Scripts {
+   ║      <script>/* grid init */</script>
+   ║  }
+   ╚══════════════════════════════════════════════════════════════════ *@
+
+
+@model dynamic
+@{
+  var title = ViewData["Title"]?.ToString() ?? "";
+  var icon = ViewData["PageIcon"]?.ToString() ?? "fa-table";
+  var subtitle = ViewData["Subtitle"]?.ToString() ?? "";
+}
+
+<!-- Page Header -->
+@await Html.PartialAsync("_PageHeader")
+
+<!-- Grid Container -->
+<div class="bd-grid-page">
+
+  <!-- Toolbar -->
+  <div class="bd-grid-toolbar" id="bd-grid-toolbar">
+    <!-- Injected by grid-base.ts OR section override -->
+    @await RenderSectionAsync("GridToolbar", required: false)
+  </div>
+
+  <!-- Grid wrapper — this div gets kendoGrid() called on it -->
+  <div class="bd-grid-wrapper">
+    <div id="bd-grid" class="bd-grid"></div>
+  </div>
+
+</div>
+
+<!-- Form shell (hidden by default — Type 3 pattern) -->
+<div id="bd-form-shell" class="bd-form-shell d-none">
+  <div class="bd-form-shell__header">
+    <h2 class="bd-form-shell__title" id="bd-form-title">
+      New Record
+    </h2>
+    <button class="bd-topbar__action-btn"
+            id="bd-form-close"
+            title="Close form (Esc)">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+  <div class="bd-form-shell__body" id="bd-form-body">
+    @await RenderSectionAsync("FormContent", required: false)
+  </div>
+</div>
+
+@section Scripts {
+  <script>
+    // Grid/Form toggle — Type 3 pattern
+    (function() {
+      const gridPage  = document.querySelector('.bd-grid-page');
+      const formShell = document.getElementById('bd-form-shell');
+      const formClose = document.getElementById('bd-form-close');
+
+      // Exposed globally so toolbar "New" button can call
+      window.bdShowForm = function(title = 'New Record') {
+        document.getElementById('bd-form-title').textContent = title;
+        gridPage?.classList.add('d-none');
+        formShell?.classList.remove('d-none');
+        // Form dirty check start
+        window.bdFormGuard?.startTracking('bd-form-body');
+      };
+
+      window.bdHideForm = function() {
+        if (window.bdFormGuard?.isDirty('bd-form-body')) {
+          kendo.confirm('You have unsaved changes. Discard them?')
+            .done(() => {
+              _closeForm();
+            });
+          return;
+        }
+        _closeForm();
+      };
+
+      function _closeForm() {
+        formShell?.classList.add('d-none');
+        gridPage?.classList.remove('d-none');
+        window.bdFormGuard?.stopTracking('bd-form-body');
+        // Refresh grid
+        window.eventBus?.emit(window.bdEvents?.GRID_REFRESH);
+      }
+
+      formClose?.addEventListener('click', window.bdHideForm);
+
+      // Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !formShell?.classList.contains('d-none')) {
+          window.bdHideForm();
+        }
+      });
+    })();
+  </script>
+}

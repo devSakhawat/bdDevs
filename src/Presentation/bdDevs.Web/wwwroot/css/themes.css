@@ -1,0 +1,421 @@
+/* ═══════════════════════════════════════════════════════════════════
+   themes.css — bdDevs Design Token System
+   Step 7.3 — Theme Platform
+   ─────────────────────────────────────────────────────────────────
+   Architecture:
+     Layer 1: Theme Family  (default / bootstrap / material / fluent)
+     Layer 2: Mode          (light / dark)
+     Layer 3: Density       (compact / comfortable)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════
+   BASE TOKENS (shared across all themes)
+   ══════════════════════════════════════════════════════════════════ */
+:root {
+    /* Structural */
+    --bd-topbar-h: 62px;
+    --bd-sidebar-w: 260px;
+    --bd-sidebar-collapsed-w: 62px;
+    --bd-footer-h: 44px;
+
+    /* Typography */
+    --bd-font-body: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --bd-font-mono: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    --bd-font-size-base: 14px;
+
+    /* Spacing */
+    --bd-space-1: 4px;
+    --bd-space-2: 8px;
+    --bd-space-3: 12px;
+    --bd-space-4: 16px;
+    --bd-space-5: 24px;
+    --bd-space-6: 32px;
+
+    /* Radii */
+    --bd-radius-sm: 4px;
+    --bd-radius-md: 6px;
+    --bd-radius-lg: 10px;
+    --bd-radius-xl: 14px;
+
+    /* Transitions */
+    --bd-transition-fast: 0.15s ease;
+    --bd-transition-normal: 0.25s ease;
+    --bd-transition-sidebar: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    --bd-transition-theme: 0.2s ease;
+
+    /* Z-index layers */
+    --bd-z-skeleton: 9999;
+    --bd-z-modal-backdrop: 8000;
+    --bd-z-command-palette: 7000;
+    --bd-z-notification: 6000;
+    --bd-z-dropdown: 5000;
+    --bd-z-topbar: 4000;
+    --bd-z-sidebar: 3000;
+    --bd-z-footer: 2000;
+    --bd-z-toast: 9500;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DEFAULT THEME — LIGHT MODE  (default)
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-family="default"][data-theme-mode="light"],
+:root {
+    /* Accent */
+    --bd-accent:        #0062cc;
+    --bd-accent-hover:  #004fa3;
+    --bd-accent-light:  #2879d0;
+    --bd-accent-bg:     #e8f1fb;
+
+    /* Semantic */
+    --bd-success:      #1a7f4b;
+    --bd-success-bg:   #e6f5ed;
+    --bd-warning:      #c47600;
+    --bd-warning-bg:   #fff3cd;
+    --bd-error:        #c0392b;
+    --bd-error-bg:     #fdecea;
+    --bd-info:         #0369a1;
+    --bd-info-bg:      #e0f2fe;
+
+    /* Backgrounds */
+    --bd-bg-body:     #f0f2f5;
+    --bd-bg-surface:  #ffffff;
+    --bd-bg-main:     #f0f2f5;
+    --bd-bg-hover:    #f4f5f7;
+    --bd-bg-input:    #ffffff;
+    --bd-bg-code:     #f4f5f7;
+
+    /* Text */
+    --bd-text-primary:   #1a1e2e;
+    --bd-text-secondary: #3d4460;
+    --bd-text-muted:     #6b7280;
+    --bd-text-disabled:  #9ca3af;
+    --bd-text-on-accent: #ffffff;
+
+    /* Borders */
+    --bd-border-light:   #e5e7eb;
+    --bd-border-medium:  #d1d5db;
+    --bd-border-strong:  #9ca3af;
+    --bd-border-focus:   #0062cc;
+
+    /* Topbar */
+    --bd-topbar-bg:     #ffffff;
+    --bd-topbar-border: #e5e7eb;
+    --bd-shadow-topbar: 0 1px 4px rgba(0,0,0,0.08);
+
+    /* Sidebar */
+    --bd-sidebar-bg:        #1a1e2e;
+    --bd-sidebar-text:      #c8cdd8;
+    --bd-sidebar-text-hover:#ffffff;
+    --bd-sidebar-item-hover:#252b3d;
+    --bd-sidebar-active-bg: #0062cc;
+    --bd-sidebar-active:    #ffffff;
+    --bd-sidebar-border:    #252b3d;
+    --bd-sidebar-section:   #6b7280;
+
+    /* Footer */
+    --bd-footer-bg:     #ffffff;
+    --bd-footer-border: #e5e7eb;
+
+    /* Shadows */
+    --bd-shadow-sm:  0 1px 3px rgba(0,0,0,0.08);
+    --bd-shadow-md:  0 4px 12px rgba(0,0,0,0.1);
+    --bd-shadow-lg:  0 8px 24px rgba(0,0,0,0.12);
+    --bd-shadow-xl:  0 20px 60px rgba(0,0,0,0.2);
+
+    /* Skeleton */
+    --bd-skeleton-base: #e5e7eb;
+    --bd-skeleton-alt:  #eceef1;
+
+    /* NProgress */
+    --bd-progress-color: #0062cc;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DEFAULT THEME — DARK MODE
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-family="default"][data-theme-mode="dark"] {
+    --bd-accent:        #4d9ff8;
+    --bd-accent-hover:  #3b8de6;
+    --bd-accent-light:  #60aafc;
+    --bd-accent-bg:     #1a2e45;
+
+    --bd-success:      #34c875;
+    --bd-success-bg:   #0d2e1e;
+    --bd-warning:      #f59e0b;
+    --bd-warning-bg:   #2d1e04;
+    --bd-error:        #f87171;
+    --bd-error-bg:     #2d0e0e;
+    --bd-info:         #38bdf8;
+    --bd-info-bg:      #0c2233;
+
+    --bd-bg-body:     #0f1117;
+    --bd-bg-surface:  #1a1e2e;
+    --bd-bg-main:     #0f1117;
+    --bd-bg-hover:    #252b3d;
+    --bd-bg-input:    #252b3d;
+    --bd-bg-code:     #252b3d;
+
+    --bd-text-primary:   #f0f2f8;
+    --bd-text-secondary: #c8cdd8;
+    --bd-text-muted:     #8892a4;
+    --bd-text-disabled:  #4a5568;
+    --bd-text-on-accent: #ffffff;
+
+    --bd-border-light:   #252b3d;
+    --bd-border-medium:  #323b52;
+    --bd-border-strong:  #4a5568;
+    --bd-border-focus:   #4d9ff8;
+
+    --bd-topbar-bg:     #1a1e2e;
+    --bd-topbar-border: #252b3d;
+    --bd-shadow-topbar: 0 1px 4px rgba(0,0,0,0.3);
+
+    --bd-sidebar-bg:        #131722;
+    --bd-sidebar-text:      #8892a4;
+    --bd-sidebar-text-hover:#f0f2f8;
+    --bd-sidebar-item-hover:#1e2336;
+    --bd-sidebar-active-bg: #4d9ff8;
+    --bd-sidebar-active:    #ffffff;
+    --bd-sidebar-border:    #1e2336;
+    --bd-sidebar-section:   #4a5568;
+
+    --bd-footer-bg:     #1a1e2e;
+    --bd-footer-border: #252b3d;
+
+    --bd-shadow-sm:  0 1px 3px rgba(0,0,0,0.3);
+    --bd-shadow-md:  0 4px 12px rgba(0,0,0,0.4);
+    --bd-shadow-lg:  0 8px 24px rgba(0,0,0,0.5);
+    --bd-shadow-xl:  0 20px 60px rgba(0,0,0,0.6);
+
+    --bd-skeleton-base: #252b3d;
+    --bd-skeleton-alt:  #1e2336;
+
+    --bd-progress-color: #4d9ff8;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BOOTSTRAP FAMILY — LIGHT
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-family="bootstrap"][data-theme-mode="light"] {
+    --bd-accent:        #0d6efd;
+    --bd-accent-hover:  #0b5ed7;
+    --bd-accent-light:  #3d8bfd;
+    --bd-accent-bg:     #e7f0ff;
+    --bd-success:      #198754;
+    --bd-success-bg:   #d1e7dd;
+    --bd-warning:      #ffc107;
+    --bd-warning-bg:   #fff3cd;
+    --bd-error:        #dc3545;
+    --bd-error-bg:     #f8d7da;
+    --bd-bg-body:      #f8f9fa;
+    --bd-bg-surface:   #ffffff;
+    --bd-bg-main:      #f8f9fa;
+    --bd-bg-hover:     #e9ecef;
+    --bd-sidebar-bg:        #212529;
+    --bd-sidebar-item-hover:#343a40;
+    --bd-sidebar-active-bg: #0d6efd;
+    --bd-border-light:   #dee2e6;
+    --bd-border-medium:  #ced4da;
+    --bd-progress-color: #0d6efd;
+}
+
+[data-theme-family="bootstrap"][data-theme-mode="dark"] {
+    --bd-accent:        #6ea8fe;
+    --bd-accent-hover:  #4a90fe;
+    --bd-accent-bg:     #1a273d;
+    --bd-bg-body:       #212529;
+    --bd-bg-surface:    #2c3035;
+    --bd-bg-main:       #212529;
+    --bd-bg-hover:      #343a40;
+    --bd-text-primary:  #dee2e6;
+    --bd-text-secondary:#adb5bd;
+    --bd-text-muted:    #6c757d;
+    --bd-border-light:  #343a40;
+    --bd-border-medium: #495057;
+    --bd-topbar-bg:     #2c3035;
+    --bd-topbar-border: #343a40;
+    --bd-sidebar-bg:    #1a1d20;
+    --bd-sidebar-text:  #adb5bd;
+    --bd-footer-bg:     #2c3035;
+    --bd-footer-border: #343a40;
+    --bd-skeleton-base: #343a40;
+    --bd-skeleton-alt:  #2c3035;
+    --bd-progress-color: #6ea8fe;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MATERIAL FAMILY — LIGHT
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-family="material"][data-theme-mode="light"] {
+    --bd-accent:        #1976d2;
+    --bd-accent-hover:  #1565c0;
+    --bd-accent-bg:     #e3f2fd;
+    --bd-success:      #388e3c;
+    --bd-success-bg:   #e8f5e9;
+    --bd-warning:      #f57c00;
+    --bd-warning-bg:   #fff3e0;
+    --bd-error:        #d32f2f;
+    --bd-error-bg:     #ffebee;
+    --bd-bg-body:      #fafafa;
+    --bd-bg-surface:   #ffffff;
+    --bd-topbar-bg:    #1976d2;
+    --bd-topbar-border:transparent;
+    --bd-text-on-topbar:#ffffff;
+    --bd-sidebar-bg:   #263238;
+    --bd-sidebar-active-bg: #1976d2;
+    --bd-border-light: #e0e0e0;
+    --bd-radius-sm: 2px;
+    --bd-radius-md: 4px;
+    --bd-radius-lg: 8px;
+    --bd-shadow-topbar: 0 2px 6px rgba(0,0,0,0.25);
+    --bd-progress-color: #ffffff;
+}
+
+[data-theme-family="material"][data-theme-mode="dark"] {
+    --bd-accent:        #90caf9;
+    --bd-accent-hover:  #64b5f6;
+    --bd-accent-bg:     #0d2137;
+    --bd-bg-body:       #121212;
+    --bd-bg-surface:    #1e1e1e;
+    --bd-bg-main:       #121212;
+    --bd-bg-hover:      #2c2c2c;
+    --bd-text-primary:  #ffffff;
+    --bd-text-secondary:#b0bec5;
+    --bd-text-muted:    #757575;
+    --bd-border-light:  #2c2c2c;
+    --bd-border-medium: #424242;
+    --bd-topbar-bg:     #1565c0;
+    --bd-sidebar-bg:    #1a1a1a;
+    --bd-sidebar-text:  #b0bec5;
+    --bd-footer-bg:     #1e1e1e;
+    --bd-skeleton-base: #2c2c2c;
+    --bd-progress-color: #90caf9;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   FLUENT FAMILY — LIGHT
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-family="fluent"][data-theme-mode="light"] {
+    --bd-accent:        #0078d4;
+    --bd-accent-hover:  #106ebe;
+    --bd-accent-bg:     #eff6fc;
+    --bd-success:      #107c10;
+    --bd-success-bg:   #dff6dd;
+    --bd-warning:      #797775;
+    --bd-warning-bg:   #fff4ce;
+    --bd-error:        #a80000;
+    --bd-error-bg:     #fde7e9;
+    --bd-bg-body:      #f3f2f1;
+    --bd-bg-surface:   #ffffff;
+    --bd-bg-hover:     #edebe9;
+    --bd-border-light: #edebe9;
+    --bd-border-medium:#c8c6c4;
+    --bd-radius-sm: 2px;
+    --bd-radius-md: 2px;
+    --bd-radius-lg: 4px;
+    --bd-font-body: 'Segoe UI', 'Segoe UI Web', sans-serif;
+    --bd-sidebar-bg:   #201f1e;
+    --bd-sidebar-active-bg: #0078d4;
+    --bd-progress-color: #0078d4;
+}
+
+[data-theme-family="fluent"][data-theme-mode="dark"] {
+    --bd-accent:        #479ef5;
+    --bd-accent-bg:     #1a2e40;
+    --bd-bg-body:       #292827;
+    --bd-bg-surface:    #323130;
+    --bd-bg-hover:      #3b3a39;
+    --bd-text-primary:  #ffffff;
+    --bd-text-secondary:#c8c6c4;
+    --bd-text-muted:    #8a8886;
+    --bd-border-light:  #484644;
+    --bd-border-medium: #605e5c;
+    --bd-topbar-bg:     #323130;
+    --bd-topbar-border: #484644;
+    --bd-sidebar-bg:    #201f1e;
+    --bd-sidebar-text:  #c8c6c4;
+    --bd-footer-bg:     #323130;
+    --bd-skeleton-base: #3b3a39;
+    --bd-progress-color: #479ef5;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   DENSITY LAYER
+   ══════════════════════════════════════════════════════════════════ */
+[data-density="comfortable"] {
+    --bd-topbar-h:           62px;
+    --bd-sidebar-w:          260px;
+    --bd-footer-h:           44px;
+    --bd-row-h:              42px;
+    --bd-input-h:            36px;
+    --bd-btn-h:              36px;
+    --bd-sidebar-item-h:     42px;
+    --bd-sidebar-item-px:    18px;
+    --bd-grid-row-h:         42px;
+    --bd-font-size-base:     14px;
+    --bd-font-size-sm:       12px;
+}
+
+[data-density="compact"] {
+    --bd-topbar-h:           52px;
+    --bd-sidebar-w:          240px;
+    --bd-footer-h:           36px;
+    --bd-row-h:              32px;
+    --bd-input-h:            28px;
+    --bd-btn-h:              28px;
+    --bd-sidebar-item-h:     32px;
+    --bd-sidebar-item-px:    14px;
+    --bd-grid-row-h:         32px;
+    --bd-font-size-base:     13px;
+    --bd-font-size-sm:       11px;
+    /* Tighter spacing in compact mode */
+    --bd-space-3: 8px;
+    --bd-space-4: 12px;
+    --bd-space-5: 16px;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   MATERIAL TOPBAR OVERRIDES
+   (material uses colored topbar, text needs to be white)
+   ══════════════════════════════════════════════════════════════════ */
+[data-theme-family="material"][data-theme-mode="light"] .bd-topbar {
+    color: #ffffff;
+}
+
+[data-theme-family="material"][data-theme-mode="light"] .bd-topbar-btn,
+[data-theme-family="material"][data-theme-mode="light"] .bd-sidebar-toggle,
+[data-theme-family="material"][data-theme-mode="light"] .bd-brand-link {
+    color: rgba(255,255,255,0.9);
+}
+
+[data-theme-family="material"][data-theme-mode="light"] .bd-topbar-btn:hover {
+    background: rgba(255,255,255,0.15);
+    color: #ffffff;
+}
+
+[data-theme-family="material"][data-theme-mode="light"] .bd-search-trigger {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.8);
+}
+
+[data-theme-family="material"][data-theme-mode="light"] .bd-breadcrumb-link,
+[data-theme-family="material"][data-theme-mode="light"] .bd-breadcrumb-current,
+[data-theme-family="material"][data-theme-mode="light"] .bd-breadcrumb-sep {
+    color: rgba(255,255,255,0.8);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   KENDO THEME CDN MAP
+   (used by theme-switcher.js to swap the <link> href)
+   ══════════════════════════════════════════════════════════════════ */
+/*
+  default  light : https://kendo.cdn.telerik.com/themes/8.0.1/default/default-main.css
+  default  dark  : https://kendo.cdn.telerik.com/themes/8.0.1/default/default-dark.css
+  bootstrap light: https://kendo.cdn.telerik.com/themes/8.0.1/bootstrap/bootstrap-main.css
+  bootstrap dark : https://kendo.cdn.telerik.com/themes/8.0.1/bootstrap/bootstrap-dark.css
+  material  light: https://kendo.cdn.telerik.com/themes/8.0.1/material/material-main.css
+  material  dark : https://kendo.cdn.telerik.com/themes/8.0.1/material/material-dark.css
+  fluent    light: https://kendo.cdn.telerik.com/themes/8.0.1/fluent/fluent-main.css
+  fluent    dark : https://kendo.cdn.telerik.com/themes/8.0.1/fluent/fluent-dark.css
+*/

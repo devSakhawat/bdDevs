@@ -1,9 +1,13 @@
-using bdDevs.Api.Hubs;
 using bdDevs.Api.Middleware;
 using bdDevs.Application.Extensions;
 using bdDevs.Infrastructure.Extensions;
+using bdDevs.Infrastructure.Hangfire;
+using bdDevs.Infrastructure.Hubs;
+using Serilog;
 
+// ── Serilog bootstrap at first, to capture startup logs ──
 var builder = WebApplication.CreateBuilder(args);
+builder.AddSerilog();
 
 //builder.Services.AddInfrastructure(builder.Configuration).AddApplicationServices().AddSignalR().Services.AddControllers();
 // alternatively, to keep it more organized:
@@ -40,9 +44,11 @@ builder.Services.AddAuthorization(opt =>
 
 var app = builder.Build();
 
-// ── Middleware Pipeline ──
-app.UseMiddleware<CorrelationIdMiddleware>();
-app.UseMiddleware<ExceptionHandlingMiddleware>();
+// ── Middleware Pipeline — order matters! ──
+app.UseMiddleware<CorrelationIdMiddleware>();      // 1. CorrelationId inject
+app.UseMiddleware<ExceptionHandlingMiddleware>();  // 2. Global exception catch
+app.UseMiddleware<RequestLoggingMiddleware>();     // 3. Request/Response log
+app.UseSerilogRequestLogging();                   // 4. Serilog enriched log
 
 if (app.Environment.IsDevelopment())
 {
@@ -56,6 +62,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");
+// app.MapControllers() will be add later
+// app.MapControllers() add to just below fo app.MapHub<NotificationHub>("/hubs/notifications");
+app.UseHangfireDashboardSecured();
+// Recurring jobs register
+RecurringJobsRegistrar.RegisterAll();
+
 
 app.Run();
 

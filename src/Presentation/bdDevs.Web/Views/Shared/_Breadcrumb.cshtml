@@ -1,0 +1,61 @@
+@* ╔══════════════════════════════════════════════════
+   ║  _Breadcrumb.cshtml
+   ║  Auto-generated from ViewData["BreadcrumbItems"]
+   ║  Usage in controllers:
+   ║    ViewData["BreadcrumbItems"] = new List<BreadcrumbItem>
+   ║    {
+   ║        new("Dashboard", "/"),
+   ║        new("CRM", "/crm"),
+   ║        new("Leads", null)  // null = current page (not linked)
+   ║    };
+   ╚══════════════════════════════════════════════════ *@
+
+@using bdDevs.Web.Models.ViewModels
+@{
+    var items = ViewData["BreadcrumbItems"] as List<BreadcrumbItem> ?? new List<BreadcrumbItem>();
+    var pageTitle = ViewData["Title"]?.ToString() ?? "";
+    var pageIcon = ViewData["PageIcon"]?.ToString() ?? "";
+}
+
+<nav class="bd-breadcrumb" aria-label="Breadcrumb">
+    <ol class="bd-breadcrumb-list">
+        @* Always show Home *@
+        <li class="bd-breadcrumb-item">
+            <a href="/" class="bd-breadcrumb-link bd-breadcrumb-home" aria-label="Home">
+                <svg width="14" height="14" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l7-7 7 7v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9z"/>
+                    <polyline points="9,22 9,12 11,12 11,22"/>
+                </svg>
+            </a>
+        </li>
+
+        @if (items.Any())
+        {
+            @foreach (var item in items)
+            {
+                <li class="bd-breadcrumb-item" aria-current="@(item.Url == null ? "page" : null)">
+                    <svg class="bd-breadcrumb-sep" width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <path d="M8 4l6 6-6 6"/>
+                    </svg>
+                    @if (item.Url != null)
+                    {
+                        <a href="@item.Url" class="bd-breadcrumb-link">@item.Label</a>
+                    }
+                    else
+                    {
+                        <span class="bd-breadcrumb-current">@item.Label</span>
+                    }
+                </li>
+            }
+        }
+        else if (!string.IsNullOrEmpty(pageTitle))
+        {
+            <li class="bd-breadcrumb-item" aria-current="page">
+                <svg class="bd-breadcrumb-sep" width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M8 4l6 6-6 6"/>
+                </svg>
+                <span class="bd-breadcrumb-current">@pageTitle</span>
+            </li>
+        }
+    </ol>
+</nav>

@@ -1,5 +1,9 @@
-﻿using bdDevs.Infrastructure.Data;
+﻿using bdDevs.Application.Common.Interfaces;
+using bdDevs.Infrastructure.Data;
+using bdDevs.Infrastructure.Hangfire;
+using bdDevs.Infrastructure.Hangfire.Jobs;
 using bdDevs.Infrastructure.Identity;
+using bdDevs.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -74,12 +78,23 @@ public static class InfrastructureServiceExtensions
 		services.AddStackExchangeRedisCache(opt =>
 		{
 			opt.Configuration = config.GetConnectionString("Redis");
-			opt.InstanceName = "bdDevCRM_";
+			opt.InstanceName = "bdDevs_";
 		});
 
 		// ── Services ──
+		services.AddScoped<ICacheService, RedisCacheService>();
 		services.AddScoped<IJwtService, JwtService>();
 		services.AddScoped<IAuthService, AuthService>();
+		services.AddScoped<IJobService, JobService>();
+		services.AddScoped<FollowUpReminderJob>();
+		services.AddScoped<CommunicationQueueJob>();
+
+		// Menu & Permission services
+		services.AddScoped<MenuService>();
+		services.AddScoped<IMenuService, CachedMenuService>();
+		services.AddScoped<IPermissionService, PermissionService>();
+
+		services.AddHangfireServices(config);
 
 		return services;
 	}

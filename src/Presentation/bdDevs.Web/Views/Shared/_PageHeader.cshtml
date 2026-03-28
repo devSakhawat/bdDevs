@@ -1,0 +1,50 @@
+@* ╔══════════════════════════════════════════════════
+   ║  _PageHeader.cshtml — Page title + actions bar
+   ║  Usage in views:
+   ║    ViewData["Title"] = "Lead List";
+   ║    ViewData["PageSubtitle"] = "Manage all CRM leads";
+   ║    ViewData["PageActions"] = Html.Raw(...)  OR use section
+   ╚══════════════════════════════════════════════════ *@
+@{
+  var title = ViewData["Title"]?.ToString() ?? "";
+  var pageIcon = ViewData["PageIcon"]?.ToString() ?? "fa-circle";
+  var subtitle = ViewData["Subtitle"]?.ToString() ?? "";
+  var showBack = (bool)(ViewData["ShowBack"] ?? false);
+  var backUrl = ViewData["BackUrl"]?.ToString() ?? "";
+}
+
+<div class="bd-page-header">
+  <div class="bd-page-header__left">
+    <!-- Back button -->
+    @if (showBack)
+    {
+      <a href="@backUrl"
+         class="bd-page-header__back"
+         data-partial="true"
+         title="Go back">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
+    }
+
+    <!-- Icon + Title -->
+    <div class="bd-page-header__title-group">
+      <div class="bd-page-header__icon">
+        <i id="bd-page-icon" class="fa-solid @pageIcon"></i>
+      </div>
+      <div>
+        <h1 id="bd-page-title" class="bd-page-header__title">
+          @title
+        </h1>
+        @if (!string.IsNullOrEmpty(subtitle))
+        {
+          <p class="bd-page-header__subtitle">@subtitle</p>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Quick Actions -->
+  <div class="bd-page-header__actions" id="bd-page-actions">
+    @await RenderSectionAsync("PageActions", required: false)
+  </div>
+</div>

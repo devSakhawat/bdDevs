@@ -21,7 +21,7 @@ public class SeedController(
 		var user = new AppUser
 		{
 			UserName = "admin",
-			Email = "admin@bddevcrmm.com",
+			Email = "admin@bdDevsm.com",
 			EmailConfirmed = true
 		};
 

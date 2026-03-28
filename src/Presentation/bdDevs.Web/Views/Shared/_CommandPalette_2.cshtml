@@ -1,0 +1,62 @@
+@* ╔══════════════════════════════════════════════════
+   ║  _CommandPalette.cshtml
+   ║  VS Code style Ctrl+K command palette
+   ╚══════════════════════════════════════════════════ *@
+
+<div class="bd-cp-backdrop" id="bdCpBackdrop" style="display:none;" aria-hidden="true"></div>
+
+<div class="bd-command-palette" id="bdCommandPalette"
+     role="dialog" aria-modal="true" aria-label="Command Palette"
+     style="display:none;">
+
+    <!-- Search input -->
+    <div class="bd-cp-input-wrap">
+        <svg class="bd-cp-search-icon" width="18" height="18" viewBox="0 0 20 20"
+             fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="8.5" cy="8.5" r="5.5"/>
+            <path d="M15 15l-3-3"/>
+        </svg>
+        <input type="text"
+               class="bd-cp-input"
+               id="bdCpInput"
+               placeholder="Search or run a command..."
+               autocomplete="off"
+               spellcheck="false"
+               aria-label="Search commands"
+               aria-autocomplete="list"
+               aria-controls="bdCpResults" />
+        <kbd class="bd-cp-esc-hint">Esc</kbd>
+    </div>
+
+    <!-- Results -->
+    <div class="bd-cp-results" id="bdCpResults" role="listbox">
+        <!-- Section: Recent -->
+        <div class="bd-cp-section" id="bdCpRecent">
+            <div class="bd-cp-section-label">Recent</div>
+            <div id="bdCpRecentItems"></div>
+        </div>
+
+        <!-- Section: Commands -->
+        <div class="bd-cp-section" id="bdCpCommands">
+            <div class="bd-cp-section-label">Commands</div>
+            <div id="bdCpCommandItems"></div>
+        </div>
+
+        <!-- No results -->
+        <div class="bd-cp-empty" id="bdCpEmpty" style="display:none;">
+            <svg width="32" height="32" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+                <circle cx="8.5" cy="8.5" r="5.5"/>
+                <path d="M15 15l-3-3"/>
+            </svg>
+            <p>No results for "<span id="bdCpQuery"></span>"</p>
+        </div>
+    </div>
+
+    <!-- Footer hints -->
+    <div class="bd-cp-footer">
+        <span><kbd>↑↓</kbd> Navigate</span>
+        <span><kbd>Enter</kbd> Select</span>
+        <span><kbd>Esc</kbd> Close</span>
+    </div>
+
+</div>

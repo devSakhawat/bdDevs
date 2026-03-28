@@ -18,9 +18,14 @@ public static class ApplicationServiceExtensions
             foreach (var asm in assemblies)
                 cfg.RegisterServicesFromAssembly(asm);
 
-            cfg.AddBehavior(typeof(IPipelineBehavior<,>),
-                            typeof(ValidationBehavior<,>));
-        });
+					// Pipeline order: Logging → Validation → Caching → Handler
+					cfg.AddBehavior(typeof(IPipelineBehavior<,>),
+													typeof(LoggingBehavior<,>));
+					cfg.AddBehavior(typeof(IPipelineBehavior<,>),
+													typeof(ValidationBehavior<,>));
+					cfg.AddBehavior(typeof(IPipelineBehavior<,>),
+													typeof(CachingBehavior<,>));
+				});
 
         foreach (var asm in assemblies)
             services.AddValidatorsFromAssembly(asm);

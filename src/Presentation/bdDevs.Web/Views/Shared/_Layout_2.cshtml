@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" data-theme-family="default" data-theme-mode="light" data-density="comfortable">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="correlation-id" content="@ViewData["CorrelationId"]" />
+    <title>@(ViewData["Title"] != null ? ViewData["Title"] + " — bdDevs" : "bdDevs")</title>
+
+    <!--
+    ╔══════════════════════════════════════════════════════════════╗
+    ║   bdDevs — App Shell                                       ║
+    ║   Step 7.1 — MVC Web Layout                                  ║
+    ║   Boot sequence: shell → user context → permissions          ║
+    ║                → menu → topbar widgets → main content        ║
+    ╚══════════════════════════════════════════════════════════════╝
+    -->
+
+    <!-- ── KENDO THEME (swapped at runtime by theme-switcher.js) ── -->
+    <link id="kendo-theme" rel="stylesheet"  href="https://kendo.cdn.telerik.com/themes/8.0.1/default/default-main.css" />
+
+    <!-- ── APP STYLES ── -->
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/themes.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
+
+    <!-- ── PAGE-LEVEL STYLES ── -->
+    @await RenderSectionAsync("Styles", required: false)
+
+    <!-- ── NPROGRESS ── -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
+</head>
+<body class="bd-app" id="bdApp">
+
+    <!-- ════════════════════════════════════════════════════════════
+         APP SHELL SKELETON — shown during boot, hidden when ready
+         ════════════════════════════════════════════════════════════ -->
+    <div id="bdAppSkeleton" class="bd-app-skeleton">
+        <div class="bd-skeleton-topbar"></div>
+        <div class="bd-skeleton-body">
+            <div class="bd-skeleton-sidebar"></div>
+            <div class="bd-skeleton-content">
+                <div class="bd-skeleton-line w-60"></div>
+                <div class="bd-skeleton-line w-40"></div>
+                <div class="bd-skeleton-line w-80"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         MAIN APP SHELL — hidden during boot, shown when ready
+         ════════════════════════════════════════════════════════════ -->
+    <div id="bdAppShell" class="bd-app-shell" style="display:none;">
+
+        <!-- ── TOPBAR ── -->
+        @await Html.PartialAsync("_Topbar")
+
+        <!-- ── BODY WRAPPER ── -->
+        <div class="bd-body-wrapper">
+
+            <!-- ── SIDEBAR ── -->
+            @await Html.PartialAsync("_Sidebar")
+
+            <!-- ── MAIN CONTENT ── -->
+            <main class="bd-main" id="bdMain" role="main">
+
+                <!-- ── PAGE HEADER (breadcrumb + title + actions) ── -->
+                @await Html.PartialAsync("_PageHeader")
+
+                <!-- ── PAGE CONTENT ── -->
+                <div class="bd-page-content" id="bdPageContent">
+                    @RenderBody()
+                </div>
+
+            </main>
+        </div>
+
+        <!-- ── FOOTER ── -->
+        @await Html.PartialAsync("_Footer")
+
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         GLOBAL HOST CONTAINERS
+         ════════════════════════════════════════════════════════════ -->
+
+    <!-- Toast host -->
+    <div id="bdToastHost" class="bd-toast-host" aria-live="polite" aria-atomic="false"></div>
+
+    <!-- Notification panel -->
+    @await Html.PartialAsync("_NotificationPanel")
+
+    <!-- Command palette -->
+    @await Html.PartialAsync("_CommandPalette")
+
+    <!-- Global modal host (Kendo Window renders here) -->
+    <div id="bdModalHost"></div>
+
+    <!-- Session timeout modal -->
+    <div id="bdSessionModal" class="bd-session-modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="bdSessionModalTitle">
+        <div class="bd-session-modal-box">
+            <div class="bd-session-modal-icon">⏱</div>
+            <h3 id="bdSessionModalTitle">Session Expiring Soon</h3>
+            <p id="bdSessionModalMsg">Your session will expire in <strong id="bdSessionCountdown">3:00</strong>. Do you want to continue?</p>
+            <div class="bd-session-modal-actions">
+                <button id="bdSessionContinue" class="bd-btn bd-btn-primary">Continue Session</button>
+                <button id="bdSessionLogout" class="bd-btn bd-btn-ghost">Logout Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sidebar backdrop -->
+    <div id="bdSidebarBackdrop" class="bd-sidebar-backdrop" style="display:none;"></div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCRIPTS
+         ════════════════════════════════════════════════════════════ -->
+
+    <!-- jQuery (Kendo dependency) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Kendo UI -->
+    <script src="https://kendo.cdn.telerik.com/2024.4.1112/js/kendo.all.min.js"></script>
+
+    <!-- NProgress -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+
+    <!-- ── CORE APP SCRIPTS (order matters) ── -->
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    <script src="~/js/loading.js" asp-append-version="true"></script>
+    <script src="~/js/toast.js" asp-append-version="true"></script>
+    <script src="~/js/theme-switcher.js" asp-append-version="true"></script>
+    <script src="~/js/bd-modal.js" asp-append-version="true"></script>
+    <script src="~/js/notification-center.js" asp-append-version="true"></script>
+    <script src="~/js/command-palette.js" asp-append-version="true"></script>
+    <script src="~/js/session-guard.js" asp-append-version="true"></script>
+    <script src="~/js/form-guard.js" asp-append-version="true"></script>
+    <script src="~/js/sidebar.js" asp-append-version="true"></script>
+
+    <!-- ── PAGE-LEVEL SCRIPTS ── -->
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- ── BOOT SEQUENCE ── -->
+    <script>
+        // Pass server-side config to JS
+        window.bdConfig = {
+            apiBase: '@Url.Content("~/api")',
+            hubUrl: '@Url.Content("~/hubs/notification")',
+            jwtExpiresAt: '@ViewData["JwtExpiresAt"]',
+            userId: '@ViewData["UserId"]',
+            userDisplayName: '@Html.Raw(ViewData["UserDisplayName"] ?? "")',
+            userAvatar: '@ViewData["UserAvatar"]',
+            currentModule: '@ViewData["Module"]',
+            currentPermissions: @Html.Raw(ViewData["Permissions"] ?? "[]"),
+            themeFamily: '@ViewData["ThemeFamily"]',
+            themeMode: '@ViewData["ThemeMode"]',
+            density: '@ViewData["Density"]',
+        };
+
+        // Boot the app shell
+        document.addEventListener('DOMContentLoaded', function () {
+            bdApp.boot();
+        });
+    </script>
+</body>
+</html>

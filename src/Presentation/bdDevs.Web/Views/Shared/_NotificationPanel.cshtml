@@ -1,0 +1,32 @@
+<div id="bd-notification-panel"
+     class="bd-notification-panel d-none"
+     role="dialog"
+     aria-label="Notifications">
+  <div class="bd-notification-panel__header">
+    <span class="bd-notification-panel__title">
+      <i class="fa-solid fa-bell me-2"></i>Notifications
+    </span>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <button id="bd-mark-all-read"
+              class="btn btn-link btn-sm p-0"
+              style="font-size:0.8rem;">
+        Mark all read
+      </button>
+      <button id="bd-notification-close"
+              class="bd-topbar__action-btn"
+              style="width:28px;height:28px;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+  </div>
+  <div id="bd-notification-list"
+       class="bd-notification-panel__list">
+    <!-- populated by notification-center.ts -->
+    <div class="bd-notification-empty">
+      <i class="fa-solid fa-inbox"></i>
+      <p>No notifications</p>
+    </div>
+  </div>
+</div>
+<div id="bd-notification-backdrop"
+     class="bd-sidebar-backdrop"></div>

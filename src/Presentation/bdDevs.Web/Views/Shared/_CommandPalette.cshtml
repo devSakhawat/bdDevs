@@ -1,0 +1,26 @@
+<div id="bd-command-palette"
+     class="bd-command-palette d-none"
+     role="dialog"
+     aria-label="Command palette">
+  <div class="bd-command-palette__backdrop"
+       id="bd-cp-backdrop"></div>
+  <div class="bd-command-palette__panel">
+    <div class="bd-command-palette__search">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text"
+             id="bd-command-input"
+             placeholder="Type a command or search..."
+             autocomplete="off" />
+      <kbd>Esc</kbd>
+    </div>
+    <div id="bd-command-results"
+         class="bd-command-palette__results">
+      <!-- populated by command-palette.ts -->
+    </div>
+    <div class="bd-command-palette__footer">
+      <span><kbd>↑↓</kbd> navigate</span>
+      <span><kbd>Enter</kbd> select</span>
+      <span><kbd>Esc</kbd> close</span>
+    </div>
+  </div>
+</div>
