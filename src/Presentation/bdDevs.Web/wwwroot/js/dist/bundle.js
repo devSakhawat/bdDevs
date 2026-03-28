@@ -532,6 +532,338 @@
   };
   var navigationService = new NavigationService();
 
+  // ts-src/types/theme.types.ts
+  var DEFAULT_THEME = {
+    themeFamily: "bootstrap",
+    themeMode: "light",
+    density: "comfortable",
+    sidebarCollapsed: false,
+    gridDefaults: { pageSize: 20 }
+  };
+
+  // ts-src/services/theme-service.ts
+  var KENDO_BASE = "/lib/kendo/styles";
+  var KENDO_THEME_FILES = {
+    default: { light: "default-main.css", dark: "default-main-dark.css" },
+    default_orange: { light: "default-orange.css", dark: "default-main-dark.css" },
+    default_purple: { light: "default-purple.css", dark: "default-main-dark.css" },
+    bootstrap: { light: "bootstrap-4.css", dark: "bootstrap-4-dark.css" },
+    material: { light: "material-main", dark: "material-main-dark.css" },
+    material_pacific: { light: "material-pacific.css", dark: "material-pacific-dark.css" },
+    material_lime: { light: "material-lime.css", dark: "material-lime-dark.css" },
+    material_smoke: { light: "material-smoke.css", dark: "material-main-dark.css" },
+    fluent: { light: "fluent-main.css", dark: "fluent-main-dark.css" },
+    classic_green: { light: "classic-green.css", dark: "classic-green-dark.css" },
+    classic_lavender: { light: "classic-lavender.css", dark: "classic-lavender-dark.css" },
+    classic_main: { light: "classic-main", dark: "classic-main-dark.css" },
+    classic_metro: { light: "classic-metro.css", dark: "classic-metro-dark.css" },
+    classic_opal: { light: "classic-opal.css", dark: "classic-opal-dark.css" },
+    classic_silver: { light: "classic-silver", dark: "classic-silver-dark.css" }
+  };
+  var ThemeService = class {
+    constructor() {
+      this.current = { ...DEFAULT_THEME };
+      this._saving = false;
+    }
+    // ── Init (called on app boot) ────────────────────────────
+    init() {
+      const fromCookie = this._loadFromCookie();
+      if (fromCookie) {
+        this.current = fromCookie;
+      } else {
+        const fromStorage = this._loadFromStorage();
+        if (fromStorage) {
+          this.current = fromStorage;
+        } else {
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)"
+          ).matches;
+          this.current.themeMode = prefersDark ? "dark" : "light";
+        }
+      }
+      this._applyToDOM(this.current, false);
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+        const hasManual = !!this._loadFromStorage();
+        if (!hasManual) {
+          this.setMode(e.matches ? "dark" : "light");
+        }
+      });
+    }
+    // ── Public API ───────────────────────────────────────────
+    get() {
+      return { ...this.current };
+    }
+    async setFamily(family) {
+      this.current.themeFamily = family;
+      await this._applyToDOM(this.current, true);
+    }
+    async setMode(mode) {
+      this.current.themeMode = mode;
+      await this._applyToDOM(this.current, true);
+    }
+    async setDensity(density) {
+      this.current.density = density;
+      await this._applyToDOM(this.current, true);
+    }
+    async setAll(pref) {
+      this.current = { ...this.current, ...pref };
+      await this._applyToDOM(this.current, true);
+    }
+    setSidebarState(collapsed) {
+      this.current.sidebarCollapsed = collapsed;
+      this._saveToStorage(this.current);
+    }
+    // ── Apply to DOM ─────────────────────────────────────────
+    async _applyToDOM(pref, persist) {
+      const { themeFamily, themeMode, density } = pref;
+      const html = document.documentElement;
+      html.setAttribute("data-theme-family", themeFamily);
+      html.setAttribute("data-theme-mode", themeMode);
+      html.setAttribute("data-density", density);
+      this._swapKendoTheme(themeFamily, themeMode);
+      eventBus.emit(Events.THEME_CHANGED, pref);
+      if (persist) {
+        this._saveToStorage(pref);
+        this._saveToCookie(pref);
+        await this._saveToDB(pref);
+      }
+    }
+    _swapKendoTheme(family, mode) {
+      const file = KENDO_THEME_FILES[family]?.[mode] ?? KENDO_THEME_FILES.bootstrap.light;
+      const href = `${KENDO_BASE}/${file}`;
+      let link = document.getElementById("kendo-theme");
+      if (!link) {
+        link = document.createElement("link");
+        link.id = "kendo-theme";
+        link.rel = "stylesheet";
+        document.head.appendChild(link);
+      }
+      if (link.href !== href) {
+        const preload = document.createElement("link");
+        preload.rel = "preload";
+        preload.as = "style";
+        preload.href = href;
+        document.head.appendChild(preload);
+        requestAnimationFrame(() => {
+          link.href = href;
+          preload.remove();
+        });
+      }
+    }
+    // ── Storage ──────────────────────────────────────────────
+    _saveToStorage(pref) {
+      try {
+        localStorage.setItem("bd_theme_pref", JSON.stringify(pref));
+      } catch {
+      }
+    }
+    _loadFromStorage() {
+      try {
+        const raw = localStorage.getItem("bd_theme_pref");
+        return raw ? JSON.parse(raw) : null;
+      } catch {
+        return null;
+      }
+    }
+    _saveToCookie(pref) {
+      const val = `${pref.themeFamily}|${pref.themeMode}|${pref.density}`;
+      document.cookie = `bd_theme=${encodeURIComponent(val)};path=/;max-age=31536000;SameSite=Lax`;
+    }
+    _loadFromCookie() {
+      try {
+        const match = document.cookie.match(/bd_theme=([^;]+)/);
+        if (!match)
+          return null;
+        const [family, mode, density] = decodeURIComponent(match[1]).split("|");
+        if (!family || !mode || !density)
+          return null;
+        return {
+          ...DEFAULT_THEME,
+          themeFamily: family,
+          themeMode: mode,
+          density
+        };
+      } catch {
+        return null;
+      }
+    }
+    // ── DB Persist ───────────────────────────────────────────
+    async _saveToDB(pref) {
+      if (this._saving)
+        return;
+      this._saving = true;
+      try {
+        await bdApi.put("/user/preference/theme", {
+          themeFamily: pref.themeFamily,
+          themeMode: pref.themeMode,
+          density: pref.density,
+          sidebarCollapsed: pref.sidebarCollapsed,
+          gridDefaults: pref.gridDefaults
+        });
+      } catch (err) {
+        console.warn("[Theme] DB save failed (non-critical):", err);
+      } finally {
+        setTimeout(() => {
+          this._saving = false;
+        }, 1e3);
+      }
+    }
+  };
+  var themeService = new ThemeService();
+
+  // ts-src/components/theme-picker.ts
+  var FAMILIES = [
+    { value: "default", label: "Default", swatch: "#1F3864" },
+    { value: "bootstrap", label: "Bootstrap", swatch: "#0D6EFD" },
+    { value: "material", label: "Material", swatch: "#6200EE" },
+    { value: "fluent", label: "Fluent", swatch: "#0078D4" }
+  ];
+  var ThemePicker = class {
+    constructor() {
+      this.panel = null;
+      this.isOpen = false;
+    }
+    init() {
+      this._renderPanel();
+      this._bindTrigger();
+      this._syncUI();
+    }
+    // ── Render picker panel ──────────────────────────────────
+    _renderPanel() {
+      const existing = document.getElementById("bd-theme-picker");
+      if (existing)
+        existing.remove();
+      const panel = document.createElement("div");
+      panel.id = "bd-theme-picker";
+      panel.className = "bd-theme-picker d-none";
+      panel.innerHTML = `
+      <div class="bd-theme-picker__header">
+        <i class="fa-solid fa-palette"></i>
+        Theme Settings
+      </div>
+
+      <!-- Family -->
+      <div class="bd-theme-picker__section">
+        <div class="bd-theme-picker__label">Theme Family</div>
+        <div class="bd-theme-family-grid" id="bd-family-grid">
+          ${FAMILIES.map((f) => `
+            <button class="bd-theme-family-btn"
+                    data-family="${f.value}"
+                    title="${f.label}">
+              <span class="swatch"
+                    style="background:${f.swatch}"></span>
+              ${f.label}
+            </button>
+          `).join("")}
+        </div>
+      </div>
+
+      <div class="bd-theme-picker__divider"></div>
+
+      <!-- Mode -->
+      <div class="bd-theme-picker__section">
+        <div class="bd-theme-picker__label">Mode</div>
+        <div class="bd-theme-mode-toggle">
+          <button class="bd-theme-mode-btn" data-mode="light">
+            <i class="fa-solid fa-sun"></i> Light
+          </button>
+          <button class="bd-theme-mode-btn" data-mode="dark">
+            <i class="fa-solid fa-moon"></i> Dark
+          </button>
+        </div>
+      </div>
+
+      <div class="bd-theme-picker__divider"></div>
+
+      <!-- Density -->
+      <div class="bd-theme-picker__section">
+        <div class="bd-theme-picker__label">Density</div>
+        <div class="bd-density-toggle">
+          <button class="bd-density-btn" data-density="comfortable">
+            <i class="fa-solid fa-expand"></i><br>Comfortable
+          </button>
+          <button class="bd-density-btn" data-density="compact">
+            <i class="fa-solid fa-compress"></i><br>Compact
+          </button>
+        </div>
+      </div>
+
+      <div class="bd-theme-picker__footer">
+        Theme preference saved automatically
+      </div>`;
+      document.body.appendChild(panel);
+      this.panel = panel;
+      panel.querySelectorAll("[data-family]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const family = btn.dataset.family;
+          themeService.setFamily(family);
+          this._syncUI();
+        });
+      });
+      panel.querySelectorAll("[data-mode]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const mode = btn.dataset.mode;
+          themeService.setMode(mode);
+          this._syncUI();
+        });
+      });
+      panel.querySelectorAll("[data-density]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const density = btn.dataset.density;
+          themeService.setDensity(density);
+          this._syncUI();
+        });
+      });
+      document.addEventListener("click", (e) => {
+        const trigger = document.getElementById("bd-theme-btn");
+        if (this.isOpen && !panel.contains(e.target) && !trigger?.contains(e.target)) {
+          this.close();
+        }
+      });
+    }
+    _bindTrigger() {
+      document.getElementById("bd-theme-btn")?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.toggle();
+      });
+    }
+    // ── Sync UI to current theme ─────────────────────────────
+    _syncUI() {
+      if (!this.panel)
+        return;
+      const pref = themeService.get();
+      this.panel.querySelectorAll("[data-family]").forEach((btn) => {
+        const el = btn;
+        el.classList.toggle("active", el.dataset.family === pref.themeFamily);
+      });
+      this.panel.querySelectorAll("[data-mode]").forEach((btn) => {
+        const el = btn;
+        el.classList.toggle("active", el.dataset.mode === pref.themeMode);
+      });
+      this.panel.querySelectorAll("[data-density]").forEach((btn) => {
+        const el = btn;
+        el.classList.toggle("active", el.dataset.density === pref.density);
+      });
+      const icon = document.querySelector("#bd-theme-btn i");
+      if (icon) {
+        icon.className = pref.themeMode === "dark" ? "fa-solid fa-moon" : "fa-solid fa-palette";
+      }
+    }
+    toggle() {
+      this.isOpen ? this.close() : this.open();
+    }
+    open() {
+      this.panel?.classList.remove("d-none");
+      this.isOpen = true;
+      this._syncUI();
+    }
+    close() {
+      this.panel?.classList.add("d-none");
+      this.isOpen = false;
+    }
+  };
+  var themePicker = new ThemePicker();
+
   // ts-src/bundle.ts
   window.bdNav = navigationService;
   window.bdApi = bdApi;
@@ -539,11 +871,13 @@
   window.eventBus = eventBus;
   window.bdEvents = Events;
   window.bdLoading = loadingService;
+  window.bdTheme = themeService;
   document.addEventListener("DOMContentLoaded", () => {
     loadingService.init();
     toastService.init();
-    console.debug("[bdDevs] App shell initialized");
     navigationService.apply();
+    themePicker.init();
+    console.debug("[bdDevs] App shell initialized");
   });
 })();
 //# sourceMappingURL=bundle.js.map

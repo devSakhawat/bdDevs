@@ -1,101 +1,93 @@
-﻿//using bdDevs.Application.Common.Interfaces;
-//using bdDevs.Contracts.Responses;
-//using bdDevs.Infrastructure.Data;
-//using System;
-//using System.Collections.Generic;
-//using System.Text;
-//using System.Text.Json;
+﻿using bdDevs.Application.Common.Interfaces;
+using bdDevs.Contracts.Responses;
+using bdDevs.Infrastructure.Data;
+using bdDevs.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
-//namespace bdDevs.Infrastructure.Services;
 
-///// <summary>
-///// Persists user UI preferences to UserProfiles.SettingsJson column.
-///// Uses Redis cache for fast reads (invalidated on write).
-///// </summary>
-//public class UserPreferenceService : IUserPreferenceService
-//{
-//	private readonly AppDbContext _db;
-//	private readonly ICacheService _cache;
-//	private static readonly JsonSerializerOptions _jsonOpts = new()
-//	{
-//		PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-//		PropertyNameCaseInsensitive = true,
-//	};
+namespace bdDevs.Infrastructure.Services;
+/// <summary>
+/// Reads/writes user UI preferences from UserProfiles.SettingsJson.
+/// Redis cache layer (60-min TTL) prevents DB reads on every page load.
+/// </summary>
+public class UserPreferenceService : IUserPreferenceService
+{
+	private readonly AppDbContext _db;
+	private readonly ICacheService _cache;
 
-//	public UserPreferenceService(AppDbContext db, ICacheService cache)
-//	{
-//		_db = db;
-//		_cache = cache;
-//	}
+	private static readonly JsonSerializerOptions _json = new()
+	{
+		PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+		PropertyNameCaseInsensitive = true,
+		WriteIndented = false,
+	};
 
-//	// ── GET ─────────────────────────────────────────────────
-//	public async Task<UserPreferencesDto> GetAsync(string userId, CancellationToken ct = default)
-//	{
-//		var cacheKey = CacheKey(userId);
+	public UserPreferenceService(AppDbContext db, ICacheService cache)
+	{
+		_db = db;
+		_cache = cache;
+	}
 
-//		// Try cache first
-//		var cached = await _cache.GetAsync<UserPreferencesDto>(cacheKey, ct);
-//		if (cached is not null) return cached;
+	// ── GET ─────────────────────────────────────────────────
+	public async Task<UserPreferencesDto> GetAsync(string userId, CancellationToken ct = default)
+	{
+		var cacheKey = $"user:prefs:{userId}";
 
-//		// Read from DB
-//		var profile = await _db.UserProfiles
-//				.AsNoTracking()
-//				.Where(p => p.UserId == userId)
-//				.Select(p => p.SettingsJson)
-//				.FirstOrDefaultAsync(ct);
+		// 1. Try Redis cache first
+		var cached = await _cache.GetAsync<UserPreferencesDto>(cacheKey, ct);
+		if (cached is not null) return cached;
 
-//		var prefs = Deserialize(profile);
+		// 2. Read SettingsJson from DB
+		var settingsJson = await _db.UserProfiles
+				.AsNoTracking()
+				.Where(p => p.AspNetUserId == userId)
+				.Select(p => p.SettingsJson)
+				.FirstOrDefaultAsync(ct);
 
-//		// Cache for 60 minutes
-//		await _cache.SetAsync(cacheKey, prefs, TimeSpan.FromMinutes(60), ct);
+		var prefs = _deserialize(settingsJson);
 
-//		return prefs;
-//	}
+		// 3. Cache for 60 minutes
+		await _cache.SetAsync(cacheKey, prefs, TimeSpan.FromMinutes(60), ct);
 
-//	// ── SAVE FULL PREFS ─────────────────────────────────────
-//	public async Task SaveAsync(string userId, UserPreferencesDto prefs, CancellationToken ct = default)
-//	{
-//		var json = JsonSerializer.Serialize(prefs, _jsonOpts);
-//		await _updateSettingsJson(userId, json, ct);
-//		await _cache.RemoveAsync(CacheKey(userId), ct);
-//	}
+		return prefs;
+	}
 
-//	// ── SAVE THEME ONLY ─────────────────────────────────────
-//	public async Task SaveThemeAsync(string userId, ThemePreference theme, CancellationToken ct = default)
-//	{
-//		// Read existing, merge, save — so other preferences aren't lost
-//		var existing = await GetAsync(userId, ct);
-//		existing.ThemeFamily = theme.ThemeFamily;
-//		existing.ThemeMode = theme.ThemeMode;
-//		existing.Density = theme.Density;
-//		await SaveAsync(userId, existing, ct);
-//	}
+	// ── SAVE FULL ────────────────────────────────────────────
+	public async Task SaveAsync(
+			string userId, UserPreferencesDto prefs, CancellationToken ct = default)
+	{
+		var json = JsonSerializer.Serialize(prefs, _json);
+		await _updateColumn(userId, json, ct);
+		await _cache.RemoveAsync($"user:prefs:{userId}", ct);
+	}
 
-//	// ── HELPERS ─────────────────────────────────────────────
-//	private async Task _updateSettingsJson(string userId, string json, CancellationToken ct)
-//	{
-//		var profile = await _db.UserProfiles.Where(p => p.UserId == userId).FirstOrDefaultAsync(ct);
+	// ── SAVE THEME ONLY ──────────────────────────────────────
+	public async Task SaveThemeAsync( string userId, ThemePreference theme, CancellationToken ct = default)
+	{
+		// Merge into existing prefs so other fields (gridDefaults, sidebarCollapsed) are kept
+		var existing = await GetAsync(userId, ct);
+		existing.ThemeFamily = theme.ThemeFamily;
+		existing.ThemeMode = theme.ThemeMode;
+		existing.Density = theme.Density;
+		await SaveAsync(userId, existing, ct);
+	}
 
-//		if (profile is null) return;
+	// ── HELPERS ─────────────────────────────────────────────
+	private async Task _updateColumn( string userId, string json, CancellationToken ct)
+	{
+		var profile = await _db.UserProfiles.FirstOrDefaultAsync(p => p.AspNetUserId == userId, ct);
 
-//		profile.SettingsJson = json;
-//		await _db.SaveChangesAsync(ct);
-//	}
+		if (profile is null) return;
 
-//	private static UserPreferencesDto Deserialize(string? json)
-//	{
-//		if (string.IsNullOrWhiteSpace(json))
-//			return new UserPreferencesDto();
+		profile.SettingsJson = json;
+		await _db.SaveChangesAsync(ct);
+	}
 
-//		try
-//		{
-//			return JsonSerializer.Deserialize<UserPreferencesDto>(json, _jsonOpts)
-//						 ?? new UserPreferencesDto();
-//		}
-//		catch
-//		{
-//			return new UserPreferencesDto();
-//		}
-//	}
-
-//	private static string CacheKey(string userId) => $"user:prefs:{userId}";
+	private static UserPreferencesDto _deserialize(string? json)
+	{
+		if (string.IsNullOrWhiteSpace(json)) return new UserPreferencesDto();
+		try { return JsonSerializer.Deserialize<UserPreferencesDto>(json, _json) ?? new(); }
+		catch { return new UserPreferencesDto(); }
+	}
+}

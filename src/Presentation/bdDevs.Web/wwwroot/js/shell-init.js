@@ -29,6 +29,8 @@
         try {
             // Load user context from JWT claims
             loadUserContext();
+            // bootShell() এর ভেতরে loadUserContext() এর পরে:
+            await syncThemeFromDB();
 
             // Show app shell
             document.getElementById('bd-app')
@@ -51,6 +53,21 @@
 
         } catch (err) {
             console.error('[Shell] Boot failed:', err);
+        }
+    }
+
+    // bootShell() এর শুরুতে — token check করার আগেই theme apply
+    // (themeService.init() bundle.ts এ DOMContentLoaded এ হয়ে যায়)
+    // এখানে শুধু DB থেকে load করে sync করো (logged-in user)
+
+    async function syncThemeFromDB() {
+        try {
+            const result = await window.bdApi.get('/user/preference/theme');
+            if (result.success && result.data) {
+                await window.bdTheme.setAll(result.data);
+            }
+        } catch {
+            // Non-critical — cookie/localStorage already applied
         }
     }
 

@@ -1,4 +1,4 @@
-export type ThemeFamily = 'default' | 'bootstrap' | 'material' | 'fluent';
+export type ThemeFamily = 'default' | 'default_orange' | 'default_purple' | 'bootstrap' | 'material' | 'material_pacific' | 'material_lime' | 'material_smoke' | 'fluent' | 'classic_green' | 'classic_lavender' | 'classic_main' | 'classic_metro' | 'classic_opal' | 'classic_silver' ;
 export type ThemeMode = 'light' | 'dark';
 export type ThemeDensity = 'compact' | 'comfortable';
 
