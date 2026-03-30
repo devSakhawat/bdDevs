@@ -1,6 +1,6 @@
-﻿# <a name="bddevcrm-ui-design-system-v2.0"></a>**📘 bdDevs — UI Design System v2.0**
-**Version:** 2.0\
-**Last Updated:** 2026-03-28\
+﻿# <a name="bddevcrm-ui-design-system-v2.0"></a>**📘 bdDevs — UI Design System v2.1**
+**Version:** 2.1\
+**Last Updated:** 2026-03-29\
 **Author:** devSakhawat (Solo Developer)\
 **Scope:** Enterprise CRM + HR/Payroll Platform — Full UI Standard\
 **Applies to:** All modules (CRM, HR, Admin, Reporting)\
@@ -65,15 +65,40 @@
 -----
 ## <a name="tech-architecture-frontend"></a>**3. Tech Architecture — Frontend**
 ### <a name="typescript-esbuild-bundle-pipeline"></a>**3.1 TypeScript → esbuild → Bundle Pipeline**
+**Strategy: Common Bundle + Per-Page Files (Option B)**
+
+30+ module হবে এই application-এ — তাই single bundle.js-এ সব page logic রাখলে file size বড় হবে এবং maintain কঠিন হবে। তাই **two-tier build strategy**:
+
+**Tier 1 — Core Bundle (সব page-এ load হয়):**\
+ts-src/bundle.ts → wwwroot/js/dist/bundle.js\
+Contains: bdApi, bdToast, bdLoading, bdNav, bdTheme, eventBus, bdEvents\
+`    `+ সব core services + shared components
+
+**Tier 2 — Per-Page Files (শুধু নিজ page-এ load হয়):**\
+ts-src/pages/crm-admin/institute.ts → wwwroot/js/dist/pages/crm-admin/institute.js\
+ts-src/pages/crm/lead.ts           → wwwroot/js/dist/pages/crm/lead.js\
+ts-src/pages/crm/student-app.ts    → wwwroot/js/dist/pages/crm/student-app.js\
+... (প্রতিটি page-এর জন্য আলাদা)
+
+**Build Flow:**\
 ts-src/ (TypeScript source — YOU WRITE HERE)\
 `    `↓ npm run build / watch\
-`    `↓ esbuild (IIFE format, ES2020 target)\
+`    `↓ esbuild (multiple entry points, IIFE format, ES2020 target)\
 `    `↓\
-wwwroot/js/dist/bundle.js (compiled output → browser loads this)\
+wwwroot/js/dist/\
+`    `├── bundle.js                          ← Core (সব page-এ \_Layout.cshtml থেকে load)\
+`    `└── pages/                             ← Per-page (শুধু নিজ page-এ load)\
+`        `├── crm-admin/institute.js\
+`        `├── crm-admin/country.js\
+`        `├── crm/lead.js\
+`        `├── crm/student-app.js\
+`        `└── hr/employee.js\
 `    `↓\
 \_Layout.cshtml loads bundle.js → window globals available\
 `    `↓\
-Razor <script> sections use: window.bdApi, window.bdTheme, etc.
+Per-page .cshtml loads own page JS → page-specific logic runs\
+`    `↓\
+Page JS uses: window.bdApi, window.bdToast, etc. (from bundle.js)
 ### <a name="কন-এই-architecture"></a>**3.2 কেন এই Architecture?**
 
 |Decision|Why|
@@ -81,11 +106,11 @@ Razor <script> sections use: window.bdApi, window.bdTheme, etc.
 |TypeScript, not plain JS|Type safety — compile-time error catch, IntelliSense|
 |esbuild, not webpack|100x faster build, zero config complexity|
 |IIFE format|Browser global — Razor views থেকে সরাসরি window.bdApi.get() call|
-|Single bundle.js|One file load, no module resolution overhead in browser|
+|Common bundle + per-page files|Core services সব page-এ available, page-specific logic শুধু needed page-এ load হয়। 30+ module-এ single bundle maintain অসম্ভব।|
 |window.\* globals|Kendo jQuery widgets + Razor script sections দুটোতেই সরাসরি ব্যবহার|
 ### <a name="folder-structure"></a>**3.3 Folder Structure**
 ts-src/\
-├── bundle.ts              ← Single entry point (সব import + window.\* expose)\
+├── bundle.ts              ← Core entry point (core services + window.\* expose)\
 ├── types/                 ← Type definitions ONLY (no logic)\
 │   ├── api.types.ts       ← ApiResponse<T>, GridResult<T>, PaginationMetadata\
 │   ├── grid.types.ts      ← GridRequestOptions, GridSort, GridFilter\
@@ -102,12 +127,34 @@ ts-src/\
 │   ├── auth-service.ts        ← Token/session management\
 │   ├── grid-service.ts        ← Kendo Grid wrapper (server-side)\
 │   └── menu-service.ts        ← Sidebar menu API integration\
-└── components/            ← UI components (manipulates DOM)\
-`    `├── theme-picker.ts    ← Theme family/mode/density picker\
-`    `├── bd-modal.ts        ← Kendo Window generic wrapper\
-`    `├── command-palette.ts ← Ctrl+K search palette\
-`    `├── notification-center.ts ← Bell notification drawer\
-`    `└── form-guard.ts      ← Form dirty check + beforeunload
+├── components/            ← UI components (manipulates DOM)\
+│   ├── theme-picker.ts    ← Theme family/mode/density picker\
+│   ├── bd-modal.ts        ← Kendo Window generic wrapper\
+│   ├── command-palette.ts ← Ctrl+K search palette\
+│   ├── notification-center.ts ← Bell notification drawer\
+│   └── form-guard.ts      ← Form dirty check + beforeunload\
+└── pages/                 ← 🆕 Per-page entry points (each builds to separate JS)\
+`    `├── crm-admin/         ← CRM Admin module pages\
+│   ├── institute.ts   ← Institute grid + modal (Type 1)\
+│   ├── country.ts     ← Country inline grid (Type 2)\
+│   ├── city.ts        ← City inline grid (Type 2)\
+│   └── status.ts      ← Status inline grid (Type 2)\
+`    `├── crm/               ← CRM module pages\
+│   ├── lead.ts        ← Lead grid/form toggle (Type 3)\
+│   ├── student.ts     ← Student grid/form (Type 3)\
+│   └── student-app.ts ← Student Application with tabs (Type 3)\
+`    `├── hr/                ← HR module pages\
+│   ├── employee.ts    ← Employee grid/form toggle (Type 3)\
+│   └── attendance.ts  ← Attendance grid\
+`    `└── admin/             ← Admin module pages\
+`        `├── user.ts        ← User management\
+`        `└── role.ts        ← Role management
+
+**নিয়ম:**\
+- প্রতিটি page-এর জন্য `pages/{module}/{page}.ts` — একটি file\
+- এই file grid initialize, column config, form handling, save logic সব contain করে\
+- এই file `window.bdApi`, `window.bdToast` ইত্যাদি global services ব্যবহার করে (bundle.js থেকে available)\
+- View (.cshtml) থেকে শুধু এই file include হয় — view-তে কোনো JS logic নেই
 ### <a name="window-globals-exposed-by-bundle.ts"></a>**3.4 Window Globals (exposed by bundle.ts)**
 window.bdApi       → BdApiService     (HTTP fetch, grid, CRUD)\
 window.bdToast     → ToastService     (success/error/warning/info)\
@@ -122,6 +169,47 @@ window.bdModal     → ModalService     (Kendo Window wrapper)\
 window.bdFormGuard → FormGuardService (dirty check)\
 window.bdGrid      → GridService      (Kendo Grid factory)\
 window.bdAuth      → AuthService      (session/token management)
+
+### **3.5 View Page Rules**
+**❌ View page (Razor .cshtml)-তে কোনো inline JavaScript code থাকবে না।**
+
+View page হবে **শুধুমাত্র HTML structure** — clean, simple, readable।
+
+#### Rules
+- ❌ `<script>` tag-এর ভেতরে কোনো JS logic লেখা যাবে না
+- ❌ Inline event handler (`onclick="..."`) ব্যবহার করা যাবে না
+- ✅ View page-এ শুধু partial includes + JS file references থাকবে
+- ✅ সব JS logic আলাদা `.ts` file-এ থাকবে (ts-src/pages/ folder-এ)
+- ✅ Page-specific JS file view-তে include হবে, সেখান থেকে function call হবে
+
+#### ✅ Correct Example:
+```html
+@{ ViewData["Title"] = "Institute"; }
+
+<partial name="~/Views/Templates/_GridPageShell.cshtml" />
+
+@section Scripts {
+    <script src="~/js/dist/pages/crm-admin/institute.js"></script>
+}
+```
+
+#### ❌ Wrong Example:
+```html
+@section Scripts {
+<script>
+    // ❌ NEVER — কোনো JS logic view-তে না
+    function getColumns() { ... }
+    $("#grid").kendoGrid({ ... });
+</script>
+}
+```
+
+#### কেন?
+- **Maintainability:** JS logic একটি জায়গায় (ts-src/) — খুঁজে পেতে সহজ
+- **Type Safety:** TypeScript file হিসেবে compile-time error catch হয়
+- **Reusability:** একই logic অন্য page-এ import করা যায়
+- **Testability:** Isolated JS file unit test করা সহজ
+- **30+ modules:** Application বড় হলে view-তে JS ছড়িয়ে থাকলে maintain অসম্ভব হবে
 
 -----
 ## <a name="design-tokens"></a>**4. Design Tokens**
@@ -364,11 +452,13 @@ Kendo DataSource transport ব্যবহার করি না — bdApi.grid
 **Reason:** Full control, typed response, no Kendo transport magic, easier debugging.
 ### <a name="grid-architecture"></a>**6.2 Grid Architecture**
 Page (Razor .cshtml)\
-`  `↓ uses \_GridPageShell.cshtml template\
-`  `↓ defines column config function\
-`  `↓ calls window.bdGrid.create() or grid-base pattern\
-`  `↓ bdApi.grid() fetches data\
+`  `↓ uses \_GridPageShell.cshtml template (HTML structure only)\
+`  `↓ includes per-page JS file (e.g., pages/crm-admin/institute.js)\
+`  `↓ Page JS defines column config + initializes Kendo Grid\
+`  `↓ bdApi.grid() fetches data (from bundle.js global)\
 `  `↓ Kendo Grid renders
+
+⚠️ View (.cshtml)-তে কোনো JS logic নেই — সব logic page JS file-এ
 ### <a name="grid-toolbar-standard-for-all-grids"></a>**6.3 Grid Toolbar (Standard for ALL grids)**
 ┌───────────────────────────────────────────────────────┐\
 │ [+ New]  [⋮ Export ▾]  │  🔍 Search...  │  [⟳ Refresh] │\
@@ -451,9 +541,21 @@ Right-click on any grid row shows:
 
 |Type|Pattern|When to Use|Example|
 | :- | :- | :- | :- |
-|**Type 1**|Kendo Window Modal|Simple/quick forms, ≤5 fields|Add Note, Quick Edit Status|
-|**Type 2**|Kendo Grid Inline|Lookup/master tables|Country list, Status list|
-|**Type 3**|Grid/Form Toggle|Complex multi-tab forms|Lead form, Student form|
+|**Type 1**|Kendo Window Modal|Grid columns ও Form fields-এ **ব্যবধান** আছে। Grid-এ হয়তো 10-12 column, কিন্তু Form-এ 15/20/যেকোনো পরিমাণ field থাকতে পারে। Add New Item click → Grid **hide হয় না**, Modal overlay হয়ে open হয়।|Institute form (grid 6 col, form 15 fields), Lead Quick Edit|
+|**Type 2**|Kendo Grid Inline|Lookup/Master tables — **Grid column = Form field** (5-10 fields)। Grid-এর মধ্যেই inline add/edit হয়। আলাদা form নেই।|Country list, City list, Status list, Category list|
+|**Type 3**|Grid/Form Toggle|**20 থেকে 200+ form fields** — এত বেশি field যে Grid রেখে Modal-এ দেখানো user-friendly না। Add New Item click → **Grid hide** হয়ে **Form show** হয়। Form-এ content অনুযায়ী **tabs** থাকতে পারে (যেমন: Student Application → 01. Course Information, 02. Education & English Language, 03. Additional Information)। Save/Cancel → Form hide → Grid show + refresh।|Student Application, Employee Profile, Lead Detail Form|
+
+#### কেন এই তিনটি Pattern?
+- **Type 1 (Modal):** Grid এবং Form-এর fields আলাদা হলে Modal সবচেয়ে ভালো — Grid visible থাকে, user context হারায় না। কিন্তু form fields বেশি হলে Modal-এ scroll করতে হয় — acceptable যতক্ষণ fields 20-এর কম।
+- **Type 2 (Inline):** সবচেয়ে fast — user grid থেকে বের হয় না। কিন্তু শুধু তখনই সম্ভব যখন grid columns = form fields।
+- **Type 3 (Toggle):** 20-200+ fields — full page দরকার। Grid hide করে পুরো space form-কে দেওয়া হয়। Tabs দিয়ে fields organize করা হয়।
+
+#### কোন Type কখন — Decision Flow:
+```
+Grid column = Form field (5-10)?  →  **Type 2** (Inline)
+Grid ≠ Form, কিন্তু form < 20 fields?  →  **Type 1** (Modal)
+Form fields 20-200+?  →  **Type 3** (Grid/Form Toggle)
+```
 ### <a name="type-3-gridform-toggle-primary-pattern"></a>**7.2 Type 3 — Grid/Form Toggle (Primary Pattern)**
 [Grid View — Visible]                [Form View — Hidden initially]\
 ┌─────────────────────┐              ┌─────────────────────────────┐\
@@ -849,7 +951,7 @@ C# classes:  PascalCase.cs      → ThemeService.cs, LeadController.cs
 | :- | :- |
 |4\.1|Remove all wwwroot/js/\*.js plain files (replaced by bundle.js)|
 |4\.2|Remove all \*\_2.\* duplicate files|
-|4\.3|Update \_Layout.cshtml to load only bundle.js + design-tokens.css|
+|4\.3|Update \_Layout.cshtml to load bundle.js + design-tokens.css. Per-page JS files load in individual view pages via @section Scripts|
 |4\.4|Update Living Doc status|
 
 -----
@@ -884,6 +986,21 @@ bdDevs.Web/\
 │       ├── grid-context-menu.ts    ← NEW\
 │       ├── notification-center.ts\
 │       └── theme-picker.ts\
+│   └── pages/                     ← 🆕 Per-page entry points\
+│       ├── crm-admin/\
+│       │   ├── institute.ts\
+│       │   ├── country.ts\
+│       │   └── city.ts\
+│       ├── crm/\
+│       │   ├── lead.ts\
+│       │   ├── student.ts\
+│       │   └── student-app.ts\
+│       ├── hr/\
+│       │   ├── employee.ts\
+│       │   └── attendance.ts\
+│       └── admin/\
+│           ├── user.ts\
+│           └── role.ts\
 ├── Views/\
 │   ├── Shared/\
 │   │   ├── \_Layout.cshtml\
@@ -911,7 +1028,16 @@ bdDevs.Web/\
 │   │   └── themes.css\
 │   ├── js/\
 │   │   ├── dist/\
-│   │   │   └── bundle.js            ← esbuild output (ONLY JS file loaded)\
+│   │   │   ├── bundle.js            ← Core bundle (all pages load via \_Layout)\
+│   │   │   └── pages/               ← 🆕 Per-page JS (each view loads its own)\
+│   │   │       ├── crm-admin/\
+│   │   │       │   ├── institute.js\
+│   │   │       │   └── country.js\
+│   │   │       ├── crm/\
+│   │   │       │   ├── lead.js\
+│   │   │       │   └── student-app.js\
+│   │   │       └── hr/\
+│   │   │           └── employee.js\
 │   │   └── shell-init.js            ← Plain JS boot (may merge into bundle)\
 │   └── favicon.ico\
 ├── Controllers/\
@@ -938,6 +1064,10 @@ bdDevs.Web/\
 |12|Toast top-right, max 3 stacked|Non-intrusive, standard position|v2.0|
 |13|Sticky save bar (not floating button)|Clear CTA, enterprise pattern|Phase 1A|
 |14|\_2 suffix files = skip/ignore|Alternative iterations, will be cleaned up|v2.0|
+|15|Common bundle + per-page JS files (not single bundle.js)|30+ module হবে — single file maintain অসম্ভব। Per-page file = শুধু যেটা দরকার সেটা load হয়|v2.1|
+|16|View page-তে কোনো inline JS নেই|Maintainability, type safety, 30+ modules-এ JS ছড়িয়ে থাকলে unmanageable|v2.1|
+|17|Type 1/2/3 form pattern corrected definition|Type 1 = Grid≠Form fields (Modal), Type 2 = Grid=Form (Inline), Type 3 = 20-200+ fields (Grid/Form Toggle)|v2.1|
+|18|pages/ folder for per-page TS entry points|Module-wise organized, esbuild multi-entry, clean separation|v2.1|
 
 -----
 **📌 এই document আপডেট করবেন যখনই:** - নতুন design decision নেবেন - Implementation status পরিবর্তন হবে - নতুন component pattern add হবে - Phase transition হবে
