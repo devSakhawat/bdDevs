@@ -22,32 +22,27 @@ public class MenuService(
 
 	public async Task<List<MenuItemDto>> GetMenuForUserAsync(long userProfileId)
 	{
-		const string sql = """
-            WITH UserPermissions AS (
-                SELECT DISTINCT p.Id AS PermissionId
-                FROM   dbo.UserRoles        ur
-                JOIN   dbo.RolePermissions  rp ON rp.RoleId       = ur.RoleId
-                JOIN   dbo.Permissions      p  ON p.Id            = rp.PermissionId
-                WHERE  ur.UserProfileId = @UserProfileId
-                AND    rp.IsGranted     = 1
-            )
-            SELECT
-                m.Id,
-                m.ParentId,
-                m.Title,
-                m.Icon,
-                m.Url,
-                m.SortOrder
-            FROM dbo.Menus m
-            WHERE m.IsActive = 1
-            AND (
-                m.PermissionId IS NULL          -- group headers — always include
-                OR m.PermissionId IN (
-                    SELECT PermissionId FROM UserPermissions
-                )
-            )
-            ORDER BY m.SortOrder;
-            """;
+		const string sql = @"
+                SELECT DISTINCT
+                    Menu.MenuId,
+                    Menu.ModuleId,
+                    GroupMember.UserId,
+                    GroupPermission.PermissionTableName,
+                    Menu.MenuName,
+                    Menu.MenuPath,
+                    Menu.ParentMenu,
+                    Menu.Sororder,
+                    Menu.ToDo
+                FROM GroupMember
+                    INNER JOIN Groups ON GroupMember.GroupId = Groups.GroupId
+                    INNER JOIN GroupPermission ON Groups.GroupId = GroupPermission.GroupId
+                    INNER JOIN Menu ON GroupPermission.ReferenceID = Menu.MenuId
+                WHERE
+                    (GroupMember.UserId = @UserId)
+                    AND (GroupPermission.PermissionTableName = 'Menu')
+                ORDER BY
+                    Menu.Sororder,
+                    Menu.MenuName";
 
 		var flat = new List<(int Id, int? ParentId, string Title,
 													string? Icon, string? Url, int SortOrder)>();
@@ -56,11 +51,11 @@ public class MenuService(
 		{
 			await using var cn = new SqlConnection(_conn);
 			await using var cmd = new SqlCommand(sql, cn);
-			cmd.Parameters.AddWithValue("@UserProfileId", userProfileId);
+			cmd.Parameters.AddWithValue("@UserId", 1);
 
 			await cn.OpenAsync();
 			await using var reader = await cmd.ExecuteReaderAsync();
-
+			//await reader.ReadAsync();
 			while (await reader.ReadAsync())
 			{
 				flat.Add((
@@ -113,10 +108,7 @@ public class MenuService(
 		}
 
 		// in English:
-		return roots
-				.Where(r => !r.IsGroup || r.HasChildren)
-				.OrderBy(r => r.SortOrder)
-				.ToList();
+		return roots.Where(r => !r.IsGroup || r.HasChildren).OrderBy(r => r.SortOrder).ToList();
 	}
 }
 

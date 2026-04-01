@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/docs/">
+    <File Path="../bdDevCRM_UI_Design_Document.docx" />
+    <File Path="UI-Design.md" />
+  </Folder>
   <Folder Name="/src/" />
   <Folder Name="/src/CrossCutting/">
     <Project Path="src/CrossCutting/bdDevs.Contracts/bdDevs.Contracts.csproj" />
