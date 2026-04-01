@@ -1,53 +1,247 @@
-﻿:root {
-  /* Spacing */
-  --bd-space-1: 4px;
-  --bd-space-2: 8px;
-  --bd-space-3: 12px;
-  --bd-space-4: 16px;
-  --bd-space-5: 20px;
-  --bd-space-6: 24px;
-  --bd-space-7: 32px;
-  --bd-space-8: 40px;
-  /* Typography */
-  --bd-font-sans: 'Inter', 'Segoe UI', -apple-system, system-ui, sans-serif;
-  --bd-text-xs: 12px;
-  --bd-text-sm: 13px;
-  --bd-text-base: 14px;
-  --bd-text-md: 16px;
-  --bd-text-lg: 18px;
-  --bd-text-xl: 20px;
-  --bd-text-2xl: 24px;
+﻿/* ════════════════════════════════════════════════════════════
+   bdDevCRM — Design Tokens
+   Single Source of Truth for ALL CSS values
+   Load this FIRST in _Layout.cshtml — before any other CSS
+   ════════════════════════════════════════════════════════════ */
+
+/* ── SPACING SYSTEM ──────────────────────────────────────── */
+:root {
+  --bd-space-0: 0px;
+  --bd-space-1: 4px; /* icon gap, tight inline */
+  --bd-space-2: 8px; /* button padding v, small gap */
+  --bd-space-3: 12px; /* button padding h, cell padding */
+  --bd-space-4: 16px; /* card padding, section gap sm */
+  --bd-space-5: 20px; /* medium section gap */
+  --bd-space-6: 24px; /* large section gap */
+  --bd-space-7: 32px; /* page-level gap */
+  --bd-space-8: 40px; /* hero/header spacing */
+  --bd-space-9: 48px;
+  --bd-space-10: 64px;
+}
+
+/* ── TYPOGRAPHY SYSTEM ───────────────────────────────────── */
+:root {
+  /* Font Family */
+  --bd-font-sans: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --bd-font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  /* Font Sizes */
+  --bd-text-xs: 12px; /* badges, timestamps */
+  --bd-text-sm: 13px; /* labels, hints, table text */
+  --bd-text-base: 14px; /* body text, input text — DEFAULT */
+  --bd-text-md: 16px; /* sub-headings */
+  --bd-text-lg: 18px; /* section titles */
+  --bd-text-xl: 20px; /* page titles (small) */
+  --bd-text-2xl: 24px; /* page titles (large) */
+  --bd-text-3xl: 30px; /* hero titles */
+  /* Font Weights */
   --bd-fw-normal: 400;
   --bd-fw-medium: 500;
   --bd-fw-semibold: 600;
-  /* Colors */
+  --bd-fw-bold: 700;
+  /* Line Heights */
+  --bd-lh-tight: 1.25;
+  --bd-lh-normal: 1.5;
+  --bd-lh-relaxed: 1.75;
+  /* Letter Spacing */
+  --bd-ls-tight: -0.01em;
+  --bd-ls-normal: 0;
+  --bd-ls-wide: 0.025em;
+  --bd-ls-wider: 0.05em; /* uppercase labels */
+}
+
+/* ── COLOR SYSTEM — LIGHT MODE ───────────────────────────── */
+:root,
+[data-theme-mode="light"] {
+  /* Brand / Primary */
   --bd-primary: #0062cc;
   --bd-primary-hover: #0052a3;
+  --bd-primary-active: #004080;
   --bd-primary-light: #e8f0fe;
+  --bd-primary-text: #ffffff;
+  /* Semantic — Success */
   --bd-success: #16a34a;
+  --bd-success-hover: #15803d;
+  --bd-success-light: #dcfce7;
+  --bd-success-text: #ffffff;
+  /* Semantic — Warning */
   --bd-warning: #f59e0b;
+  --bd-warning-hover: #d97706;
+  --bd-warning-light: #fef3c7;
+  --bd-warning-text: #1c1917;
+  /* Semantic — Danger */
   --bd-danger: #dc2626;
+  --bd-danger-hover: #b91c1c;
+  --bd-danger-active: #991b1b;
+  --bd-danger-light: #fee2e2;
+  --bd-danger-text: #ffffff;
+  /* Semantic — Info */
+  --bd-info: #0ea5e9;
+  --bd-info-hover: #0284c7;
+  --bd-info-light: #e0f2fe;
+  --bd-info-text: #ffffff;
+  /* Surface / Neutral */
   --bd-bg: #f8fafc;
   --bd-surface: #ffffff;
-  --bd-border: #e5e7eb;
   --bd-surface-hover: #f1f5f9;
+  --bd-surface-active: #e2e8f0;
+  --bd-surface-2: #f8fafc;
+  --bd-surface-3: #f1f5f9;
+  /* Borders */
+  --bd-border: #e5e7eb;
+  --bd-border-strong: #d1d5db;
+  --bd-border-focus: #0062cc;
+  --bd-divider: #f3f4f6;
+  /* Text */
   --bd-text-primary: #111827;
   --bd-text-secondary: #6b7280;
   --bd-text-muted: #9ca3af;
-  /* Radius / shadow / transitions */
-  --bd-radius-sm: 4px;
-  --bd-radius-md: 6px;
-  --bd-radius-lg: 8px;
-  --bd-shadow-sm: 0 1px 2px rgba(16,24,40,0.04);
-  --bd-shadow-md: 0 4px 12px rgba(16,24,40,0.08);
-  --bd-shadow-lg: 0 12px 24px rgba(16,24,40,0.12);
-  --bd-transition-fast: 0.15s ease;
-  --bd-transition-base: 0.2s ease;
+  --bd-text-disabled: #d1d5db;
+  --bd-text-inverse: #ffffff;
+  --bd-text-danger: #dc2626;
+  --bd-text-success: #16a34a;
+  --bd-text-warning: #d97706;
+  --bd-text-link: #0062cc;
+  --bd-text-link-hover: #0052a3;
+  /* Focus ring */
+  --bd-focus-ring: 0 0 0 3px rgba(0, 98, 204, 0.2);
 }
 
-body {
-  font-family: var(--bd-font-sans);
-  font-size: var(--bd-text-base);
-  color: var(--bd-text-primary);
-  background: var(--bd-bg);
+/* ── COLOR SYSTEM — DARK MODE ────────────────────────────── */
+[data-theme-mode="dark"] {
+  --bd-primary: #3b82f6;
+  --bd-primary-hover: #2563eb;
+  --bd-primary-active: #1d4ed8;
+  --bd-primary-light: #1e3a5f;
+  --bd-primary-text: #ffffff;
+  --bd-success: #22c55e;
+  --bd-success-hover: #16a34a;
+  --bd-success-light: #052e16;
+  --bd-success-text: #ffffff;
+  --bd-warning: #fbbf24;
+  --bd-warning-hover: #f59e0b;
+  --bd-warning-light: #422006;
+  --bd-warning-text: #1c1917;
+  --bd-danger: #ef4444;
+  --bd-danger-hover: #dc2626;
+  --bd-danger-active: #b91c1c;
+  --bd-danger-light: #450a0a;
+  --bd-danger-text: #ffffff;
+  --bd-info: #38bdf8;
+  --bd-info-hover: #0ea5e9;
+  --bd-info-light: #0c2d48;
+  --bd-info-text: #ffffff;
+  --bd-bg: #0f172a;
+  --bd-surface: #1e293b;
+  --bd-surface-hover: #334155;
+  --bd-surface-active: #475569;
+  --bd-surface-2: #1e293b;
+  --bd-surface-3: #334155;
+  --bd-border: #334155;
+  --bd-border-strong: #475569;
+  --bd-border-focus: #3b82f6;
+  --bd-divider: #1e293b;
+  --bd-text-primary: #f1f5f9;
+  --bd-text-secondary: #94a3b8;
+  --bd-text-muted: #64748b;
+  --bd-text-disabled: #475569;
+  --bd-text-inverse: #0f172a;
+  --bd-text-danger: #f87171;
+  --bd-text-success: #4ade80;
+  --bd-text-warning: #fbbf24;
+  --bd-text-link: #60a5fa;
+  --bd-text-link-hover: #93c5fd;
+  --bd-focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.3);
+}
+
+/* ── ELEVATION / SHADOW SYSTEM ───────────────────────────── */
+:root {
+  --bd-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --bd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --bd-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --bd-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.12), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+  --bd-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme-mode="dark"] {
+  --bd-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --bd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --bd-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
+  --bd-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  --bd-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+}
+
+/* ── BORDER RADIUS SYSTEM ────────────────────────────────── */
+:root {
+  --bd-radius-none: 0px;
+  --bd-radius-sm: 4px; /* badges, small elements */
+  --bd-radius-md: 6px; /* buttons, inputs */
+  --bd-radius-lg: 8px; /* cards, panels */
+  --bd-radius-xl: 12px; /* modals, large containers */
+  --bd-radius-2xl: 16px; /* large feature areas */
+  --bd-radius-full: 9999px; /* pills, avatars */
+}
+
+/* ── TRANSITION SYSTEM ───────────────────────────────────── */
+:root {
+  --bd-transition-fast: 0.15s ease;
+  --bd-transition-base: 0.2s ease;
+  --bd-transition-slow: 0.3s ease;
+  --bd-transition-bounce: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Z-INDEX SYSTEM ──────────────────────────────────────── */
+:root {
+  --bd-z-base: 1;
+  --bd-z-dropdown: 100;
+  --bd-z-sticky: 200;
+  --bd-z-sidebar: 900;
+  --bd-z-topbar: 1000;
+  --bd-z-overlay: 1050;
+  --bd-z-modal: 1100;
+  --bd-z-toast: 9000;
+  --bd-z-tooltip: 9500;
+  --bd-z-skeleton: 9999;
+}
+
+/* ── LAYOUT DIMENSIONS ───────────────────────────────────── */
+:root {
+  --bd-topbar-h: 80px;
+  --bd-footer-h: 50px;
+  --bd-sidebar-w: 260px;
+  --bd-sidebar-w-sm: 60px;
+  --bd-content-padding: var(--bd-space-6);
+}
+
+[data-density="compact"] {
+  --bd-topbar-h: 56px;
+  --bd-footer-h: 40px;
+  --bd-sidebar-w: 220px;
+  --bd-content-padding: var(--bd-space-4);
+}
+
+/* ── COMPONENT SIZE TOKENS ───────────────────────────────── */
+:root {
+  /* Input / Button heights */
+  --bd-size-sm: 28px;
+  --bd-size-md: 36px; /* DEFAULT */
+  --bd-size-lg: 44px;
+  /* Avatar sizes */
+  --bd-avatar-sm: 24px;
+  --bd-avatar-md: 32px;
+  --bd-avatar-lg: 40px;
+  --bd-avatar-xl: 56px;
+  /* Badge sizes */
+  --bd-badge-h: 20px;
+  --bd-badge-h-sm: 16px;
+  /* Icon sizes */
+  --bd-icon-sm: 12px;
+  --bd-icon-md: 14px;
+  --bd-icon-lg: 16px;
+  --bd-icon-xl: 20px;
+}
+
+[data-density="compact"] {
+  --bd-size-sm: 24px;
+  --bd-size-md: 30px;
+  --bd-size-lg: 38px;
 }

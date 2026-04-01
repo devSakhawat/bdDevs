@@ -1,0 +1,27 @@
+﻿@{
+  var icon = ViewData["EmptyIcon"]?.ToString() ?? "fa-inbox";
+  var title = ViewData["EmptyTitle"]?.ToString() ?? "No records found";
+  var desc = ViewData["EmptyDesc"]?.ToString() ?? "There are no records to display.";
+  var btnLabel = ViewData["EmptyBtnLabel"]?.ToString();
+  var btnAction = ViewData["EmptyBtnAction"]?.ToString();
+  var canCreate = (bool)(ViewData["CanCreate"] ?? true);
+}
+
+<div class="bd-empty-state" id="bd-empty-state">
+  <div class="bd-empty-state__icon">
+    <i class="fa-solid @icon"></i>
+  </div>
+  <h3 class="bd-empty-state__title">@title</h3>
+  <p class="bd-empty-state__description">@desc</p>
+
+  @if (canCreate && !string.IsNullOrEmpty(btnLabel))
+  {
+    <div class="bd-empty-state__action">
+      <button class="bd-btn bd-btn-primary"
+              onclick="@btnAction">
+        <i class="fa-solid fa-plus"></i>
+        @btnLabel
+      </button>
+    </div>
+  }
+</div>

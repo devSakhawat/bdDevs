@@ -37,15 +37,23 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
-  <!-- Kendo UI Theme — swapped by theme-service.ts -->
-  <link id="kendo-theme" rel="stylesheet"  href="/lib/kendo/styles/@(themeFamily)-@(themeMode).css" />
+  <!-- 1. Design Tokens (FIRST — সব variable define করে) -->
+  <link rel="stylesheet" href="~/css/design-tokens.css" asp-append-version="true" />
+
+  <!-- 2. Design System (components — tokens-এর উপর নির্ভর করে) -->
+  <link rel="stylesheet" href="~/css/design-system.css" asp-append-version="true" />
+  <!-- 3. Kendo Theme -->
+  <link id="kendo-theme" rel="stylesheet" href="/lib/kendo/styles/@(themeFamily)-@(themeMode).css" />
+
 
   <!-- App styles -->
-  <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
+  <!-- 4. Layout -->
   <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+  <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
   <link rel="stylesheet" href="~/css/themes.css" asp-append-version="true" />
   <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
 
+  <!-- 5. Page-specific styles -->
   @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
