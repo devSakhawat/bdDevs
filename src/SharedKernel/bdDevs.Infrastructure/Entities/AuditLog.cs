@@ -6,28 +6,71 @@ using Microsoft.EntityFrameworkCore;
 
 namespace bdDevs.Infrastructure.Entities;
 
-[Index("TableName", "RecordId", Name = "IX_AuditLogs_TableName")]
+[Keyless]
+[Table("AuditLog")]
 public partial class AuditLog
 {
-    [Key]
-    public long Id { get; set; }
+    public int AuditId { get; set; }
 
-    [StringLength(200)]
-    public string TableName { get; set; } = null!;
+    public int HrRecordId { get; set; }
 
-    [StringLength(100)]
-    public string RecordId { get; set; } = null!;
+    [StringLength(500)]
+    public string? ClientUser { get; set; }
 
-    public byte Action { get; set; }
+    [Column("ClientIP")]
+    [StringLength(50)]
+    public string? ClientIp { get; set; }
 
-    public string? OldDataJson { get; set; }
+    [StringLength(500)]
+    public string? MacAddress { get; set; }
 
-    public string? NewDataJson { get; set; }
+    [StringLength(500)]
+    [Unicode(false)]
+    public string? BrowserInfo { get; set; }
 
-    public long? ChangedBy { get; set; }
+    public int? AuditTypeId { get; set; }
 
-    public DateTime ChangedAt { get; set; }
+    public string? AuditDetails { get; set; }
 
-    [StringLength(45)]
-    public string? IpAddress { get; set; }
+    [Column(TypeName = "datetime")]
+    public DateTime? AuditDate { get; set; }
+
+    [Unicode(false)]
+    public string? RequestedUrl { get; set; }
+
+    [StringLength(250)]
+    [Unicode(false)]
+    public string? ReferrerUrl { get; set; }
+
+    [StringLength(150)]
+    [Unicode(false)]
+    public string? DomainName { get; set; }
+
+    [StringLength(150)]
+    [Unicode(false)]
+    public string? ActionName { get; set; }
+
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? ControllerName { get; set; }
+
+    [Unicode(false)]
+    public string? RequestedParams { get; set; }
+
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? TableName { get; set; }
+
+    public int? IdentityInTable { get; set; }
+
+    public int? MenuId { get; set; }
+
+    public int? ModuleId { get; set; }
+
+    [StringLength(50)]
+    [Unicode(false)]
+    public string? AuditStatus { get; set; }
+
+    [Unicode(false)]
+    public string? ExceptionLog { get; set; }
 }

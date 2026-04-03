@@ -6,37 +6,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace bdDevs.Infrastructure.Entities;
 
-[Index("ParentId", Name = "IX_Menus_ParentId")]
+[Table("Menu")]
 public partial class Menu
 {
     [Key]
-    public int Id { get; set; }
+    [Column("MenuID")]
+    public int MenuId { get; set; }
 
-    public int? ParentId { get; set; }
+    [Column("ModuleID")]
+    public int ModuleId { get; set; }
 
-    [StringLength(100)]
-    public string Title { get; set; } = null!;
-
-    [StringLength(100)]
-    public string? Icon { get; set; }
+    [StringLength(50)]
+    public string MenuName { get; set; } = null!;
 
     [StringLength(200)]
-    public string? Url { get; set; }
+    public string? MenuPath { get; set; }
 
-    public int? PermissionId { get; set; }
+    public int? ParentMenu { get; set; }
 
-    public int SortOrder { get; set; }
+    [Column("SORORDER")]
+    public int? Sororder { get; set; }
 
-    public bool IsActive { get; set; }
+    [Column("TODO")]
+    public int? Todo { get; set; }
 
-    [InverseProperty("Parent")]
-    public virtual ICollection<Menu> InverseParent { get; set; } = new List<Menu>();
-
-    [ForeignKey("ParentId")]
-    [InverseProperty("InverseParent")]
-    public virtual Menu? Parent { get; set; }
-
-    [ForeignKey("PermissionId")]
-    [InverseProperty("Menus")]
-    public virtual Permission? Permission { get; set; }
+    public int? IsActive { get; set; }
 }
