@@ -1,0 +1,114 @@
+@{
+    Layout = "_Layout";
+}
+
+<!-- Employee Grid Page -->
+<div class="bd-page-content">
+    <!-- Page Header -->
+    <div class="bd-page-header">
+        <div class="bd-page-header-left">
+            <h1 class="bd-page-title">
+                <i class="fa-solid @ViewData["PageIcon"] me-2"></i>
+                @ViewData["Title"]
+            </h1>
+            <p class="bd-page-subtitle">@ViewData["Subtitle"]</p>
+        </div>
+    </div>
+
+    <!-- Grid Container -->
+    <div class="bd-grid-container">
+        <!-- Filter Panel (Collapsible) -->
+        <div class="bd-filter-panel" id="employeeFilterPanel">
+            <div class="bd-filter-header">
+                <h6>
+                    <i class="fa-solid fa-filter me-2"></i>Filters
+                </h6>
+                <button class="bd-filter-toggle" onclick="bdToggleFilters()">
+                    <i class="fa-solid fa-chevron-up"></i>
+                </button>
+            </div>
+            <div class="bd-filter-body">
+                <div class="bd-filter-row">
+                    <div class="bd-filter-field">
+                        <label>Name</label>
+                        <input type="text" id="filter-name" class="k-textbox" placeholder="Search by name..." />
+                    </div>
+                    <div class="bd-filter-field">
+                        <label>Email</label>
+                        <input type="text" id="filter-email" class="k-textbox" placeholder="Search by email..." />
+                    </div>
+                    <div class="bd-filter-field">
+                        <label>Department</label>
+                        <input type="text" id="filter-department" class="k-textbox" placeholder="Department..." />
+                    </div>
+                    <div class="bd-filter-field">
+                        <label>Status</label>
+                        <select id="filter-status" class="k-dropdown">
+                            <option value="">All</option>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="bd-filter-actions">
+                    <button class="k-button k-button-solid-primary" onclick="bdEmployee.applyFilters()">
+                        <i class="fa-solid fa-search me-1"></i> Apply Filters
+                    </button>
+                    <button class="k-button k-button-solid-base" onclick="bdEmployee.clearFilters()">
+                        <i class="fa-solid fa-times me-1"></i> Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid Toolbar -->
+        <div class="bd-grid-toolbar">
+            <div class="bd-grid-toolbar-left">
+                <button class="k-button k-button-solid-primary"
+                        data-permission="Employee:Create"
+                        onclick="bdEmployee.showForm('new')">
+                    <i class="fa-solid fa-plus me-1"></i> Add Employee
+                </button>
+                <button class="k-button k-button-solid-base" onclick="bdEmployee.refreshGrid()">
+                    <i class="fa-solid fa-sync me-1"></i> Refresh
+                </button>
+            </div>
+            <div class="bd-grid-toolbar-right">
+                <button class="k-button k-button-solid-base" onclick="bdEmployee.exportToExcel()">
+                    <i class="fa-solid fa-file-excel me-1"></i> Export Excel
+                </button>
+                <button class="k-button k-button-solid-base" onclick="bdEmployee.exportToPdf()">
+                    <i class="fa-solid fa-file-pdf me-1"></i> Export PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Kendo Grid -->
+        <div id="employeeGrid"></div>
+
+        <!-- Empty State (shown when no data) -->
+        <div id="employeeEmptyState" class="bd-empty-state" style="display: none;">
+            <div class="bd-empty-state-icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <h3 class="bd-empty-state-title">No Employees Found</h3>
+            <p class="bd-empty-state-desc">
+                Start by adding your first employee record
+            </p>
+            <div class="bd-empty-state-action">
+                <button class="k-button k-button-solid-primary"
+                        data-permission="Employee:Create"
+                        onclick="bdEmployee.showForm('new')">
+                    <i class="fa-solid fa-plus me-1"></i> Add First Employee
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Employee Modal Form -->
+@await Html.PartialAsync("_EmployeeModal")
+
+@section Scripts {
+    <script src="~/js/modules/employee.js"></script>
+}
