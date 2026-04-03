@@ -1,0 +1,277 @@
+<!-- Employee Modal Form with Tabs -->
+<div class="bd-modal-overlay" id="employeeModalOverlay" style="display: none;">
+    <div class="bd-modal bd-modal-lg" id="employeeModal">
+        <!-- Modal Header -->
+        <div class="bd-modal-header">
+            <h4 class="bd-modal-title" id="employeeModalTitle">
+                <i class="fa-solid fa-user me-2"></i>New Employee
+            </h4>
+            <button class="bd-modal-close" onclick="bdEmployee.closeForm()">
+                <i class="fa-solid fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="bd-modal-body">
+            <form id="employeeForm">
+                <input type="hidden" id="employeeId" name="id" />
+
+                <!-- Tab Navigation -->
+                <div class="bd-form-tabs">
+                    <div class="bd-form-tab active" data-tab="personal" onclick="bdEmployee.switchTab('personal')">
+                        <i class="fa-solid fa-user me-2"></i>Personal Info
+                    </div>
+                    <div class="bd-form-tab" data-tab="contact" onclick="bdEmployee.switchTab('contact')">
+                        <i class="fa-solid fa-phone me-2"></i>Contact Details
+                    </div>
+                    <div class="bd-form-tab" data-tab="employment" onclick="bdEmployee.switchTab('employment')">
+                        <i class="fa-solid fa-briefcase me-2"></i>Employment
+                    </div>
+                </div>
+
+                <!-- Tab Content: Personal Info -->
+                <div class="bd-form-tab-content active" id="tab-personal">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">First Name</label>
+                                <input type="text" class="bd-form-control" id="firstName" name="firstName"
+                                       placeholder="Enter first name" required />
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Last Name</label>
+                                <input type="text" class="bd-form-control" id="lastName" name="lastName"
+                                       placeholder="Enter last name" required />
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label">Middle Name</label>
+                                <input type="text" class="bd-form-control" id="middleName" name="middleName"
+                                       placeholder="Enter middle name" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Date of Birth</label>
+                                <input type="text" class="bd-form-control" id="dateOfBirth" name="dateOfBirth"
+                                       placeholder="Select date" required />
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Gender</label>
+                                <select class="bd-form-control" id="gender" name="gender" required>
+                                    <option value="">Select gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">National ID</label>
+                                <input type="text" class="bd-form-control" id="nationalId" name="nationalId"
+                                       placeholder="Enter national ID" required />
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label">Passport Number</label>
+                                <input type="text" class="bd-form-control" id="passportNumber" name="passportNumber"
+                                       placeholder="Enter passport number" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Contact Details -->
+                <div class="bd-form-tab-content" id="tab-contact" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Email</label>
+                                <input type="email" class="bd-form-control" id="email" name="email"
+                                       placeholder="Enter email address" required />
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Phone Number</label>
+                                <input type="text" class="bd-form-control" id="phoneNumber" name="phoneNumber"
+                                       placeholder="Enter phone number" required />
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Present Address</label>
+                                <textarea class="bd-form-control" id="presentAddress" name="presentAddress"
+                                          rows="3" placeholder="Enter present address" required></textarea>
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label">Permanent Address</label>
+                                <textarea class="bd-form-control" id="permanentAddress" name="permanentAddress"
+                                          rows="3" placeholder="Enter permanent address"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label">Emergency Contact Name</label>
+                                <input type="text" class="bd-form-control" id="emergencyContactName" name="emergencyContactName"
+                                       placeholder="Enter emergency contact name" />
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label">Emergency Contact Phone</label>
+                                <input type="text" class="bd-form-control" id="emergencyContactPhone" name="emergencyContactPhone"
+                                       placeholder="Enter emergency contact phone" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Employment Details -->
+                <div class="bd-form-tab-content" id="tab-employment" style="display: none;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Employee Code</label>
+                                <input type="text" class="bd-form-control" id="employeeCode" name="employeeCode"
+                                       placeholder="Enter employee code" required />
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Join Date</label>
+                                <input type="text" class="bd-form-control" id="joinDate" name="joinDate"
+                                       placeholder="Select join date" required />
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Department</label>
+                                <select class="bd-form-control" id="department" name="department" required
+                                        onchange="bdEmployee.onDepartmentChange()">
+                                    <option value="">Select department</option>
+                                    <option value="IT">Information Technology</option>
+                                    <option value="HR">Human Resources</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Sales">Sales</option>
+                                    <option value="Marketing">Marketing</option>
+                                </select>
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Position</label>
+                                <select class="bd-form-control" id="position" name="position" required>
+                                    <option value="">Select position</option>
+                                </select>
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Employment Type</label>
+                                <select class="bd-form-control" id="employmentType" name="employmentType" required>
+                                    <option value="">Select type</option>
+                                    <option value="Permanent">Permanent</option>
+                                    <option value="Contract">Contract</option>
+                                    <option value="Intern">Intern</option>
+                                </select>
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Status</label>
+                                <select class="bd-form-control" id="status" name="status" required>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label bd-required">Salary</label>
+                                <input type="number" class="bd-form-control" id="salary" name="salary"
+                                       placeholder="Enter salary" required />
+                                <span class="bd-form-error"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label">Reporting Manager</label>
+                                <select class="bd-form-control" id="reportingManagerId" name="reportingManagerId">
+                                    <option value="">Select manager</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="bd-form-group">
+                                <label class="bd-form-label">Notes</label>
+                                <textarea class="bd-form-control" id="notes" name="notes"
+                                          rows="3" placeholder="Additional notes"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="bd-modal-footer">
+            <button class="k-button k-button-solid-base" onclick="bdEmployee.closeForm()">
+                <i class="fa-solid fa-times me-1"></i> Cancel
+            </button>
+            <button class="k-button k-button-solid-primary" id="btnSaveEmployee" onclick="bdEmployee.saveEmployee()">
+                <i class="fa-solid fa-save me-1"></i> Save Employee
+            </button>
+        </div>
+    </div>
+</div>
