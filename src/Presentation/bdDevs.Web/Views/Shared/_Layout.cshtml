@@ -1,238 +1,166 @@
-@using bdDevs.Web.Services
-@inject WebMenuService MenuService
-@{
-  var pageTitle = ViewData["Title"]?.ToString() ?? "bdDevs";
-  var pageIcon = ViewData["PageIcon"]?.ToString() ?? "fa-circle";
-  var breadcrumbs = ViewData["Breadcrumbs"] as List<(string Label, string? Url)>
-                    ?? new();
-  var menu = await MenuService.GetMenuAsync();
-  var currentUrl = Context.Request.Path.Value ?? "";
-
-  // User theme from cookie (before JS loads — no flicker)
-  var themeCookie = Context.Request.Cookies["bd_theme"] ?? "";
-  var themeFamily = "bootstrap";
-  var themeMode = "light";
-  var themeDensity = "comfortable";
-  if (!string.IsNullOrEmpty(themeCookie))
-  {
-    var parts = themeCookie.Split('|');
-    if (parts.Length >= 3)
-    {
-      themeFamily = parts[0];
-      themeMode = parts[1];
-      themeDensity = parts[2];
-    }
-  }
-}
 <!DOCTYPE html>
-<html lang="en"
-      data-theme-family="@themeFamily"
-      data-theme-mode="@themeMode"
-      data-density="@themeDensity">
+<html lang="en" data-theme-family="default" data-theme-mode="light" data-density="comfortable">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@pageTitle — bdDevs</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="correlation-id" content="@ViewData["CorrelationId"]" />
+    <title>@(ViewData["Title"] != null ? ViewData["Title"] + " — bdDevs" : "bdDevs")</title>
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!--
+    ╔══════════════════════════════════════════════════════════════╗
+    ║   bdDevs — App Shell                                       ║
+    ║   Step 7.1 — MVC Web Layout                                  ║
+    ║   Boot sequence: shell → user context → permissions          ║
+    ║                → menu → topbar widgets → main content        ║
+    ╚══════════════════════════════════════════════════════════════╝
+    -->
 
-  <!-- 1. Design Tokens (FIRST — সব variable define করে) -->
-  <link rel="stylesheet" href="~/css/design-tokens.css" asp-append-version="true" />
+    <!-- ── KENDO THEME (swapped at runtime by theme-switcher.js) ── -->
+    <link id="kendo-theme" rel="stylesheet"  href="https://kendo.cdn.telerik.com/themes/8.0.1/default/default-main.css" />
 
-  <!-- 2. Design System (components — tokens-এর উপর নির্ভর করে) -->
-  <link rel="stylesheet" href="~/css/design-system.css" asp-append-version="true" />
-  <!-- 3. Kendo Theme -->
-  <link id="kendo-theme" rel="stylesheet" href="/lib/kendo/styles/@(themeFamily)-@(themeMode).css" />
+    <!-- ── APP STYLES ── -->
+    <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/themes.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
 
+    <!-- ── PAGE-LEVEL STYLES ── -->
+    @await RenderSectionAsync("Styles", required: false)
 
-  <!-- App styles -->
-  <!-- 4. Layout -->
-  <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
-  <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
-  <link rel="stylesheet" href="~/css/themes.css" asp-append-version="true" />
-  <link rel="stylesheet" href="~/css/components.css" asp-append-version="true" />
-
-  <!-- 5. Page-specific styles -->
-  @await RenderSectionAsync("Styles", required: false)
+    <!-- ── NPROGRESS ── -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
 </head>
-<body>
+<body class="bd-app" id="bdApp">
 
-  <!-- ══ APP SKELETON (shows while shell loads) ══════════════════ -->
-  <div id="bd-app-skeleton" class="bd-skeleton">
-    <div class="bd-skeleton__topbar">
-      <div class="bd-shimmer" style="width:160px;height:32px;"></div>
-      <div class="bd-shimmer" style="width:240px;height:32px;margin-left:auto;"></div>
-      <div class="bd-shimmer" style="width:32px;height:32px;border-radius:50%;"></div>
-    </div>
-    <div class="bd-skeleton__sidebar"></div>
-    <div class="bd-skeleton__content">
-      <div class="bd-shimmer" style="width:220px;height:28px;margin-bottom:24px;"></div>
-      <div class="bd-shimmer" style="width:100%;height:48px;margin-bottom:12px;"></div>
-      <div class="bd-shimmer" style="width:100%;height:360px;"></div>
-    </div>
-  </div>
-
-  <!-- ══ MOBILE SIDEBAR BACKDROP ════════════════════════════════ -->
-  <div id="bd-sidebar-backdrop" class="bd-sidebar-backdrop"></div>
-
-  <!-- ══ APP SHELL ═══════════════════════════════════════════════ -->
-  <div id="bd-app" class="bd-app d-none">
-
-    <!-- ── TOPBAR ─────────────────────────────────────────────── -->
-    <header class="bd-topbar" role="banner">
-      <!-- Brand -->
-      <div class="bd-topbar__brand">
-        <a href="/dashboard" class="bd-topbar__logo">
-          <i class="fa-solid fa-building bd-topbar__logo-icon"></i>
-          <span class="bd-topbar__logo-text">bdDevs</span>
-        </a>
-      </div>
-
-      <!-- Main area -->
-      <div class="bd-topbar__main">
-        <!-- Sidebar toggle -->
-        <button id="bd-sidebar-toggle"
-                class="bd-topbar__toggle"
-                aria-label="Toggle sidebar"
-                title="Toggle sidebar (Ctrl+B)">
-          <i class="fa-solid fa-bars"></i>
-        </button>
-
-        <!-- Breadcrumb -->
-        <nav class="bd-topbar__breadcrumb" aria-label="Breadcrumb">
-          @foreach (var (label, url) in breadcrumbs)
-          {
-            if (url != null)
-            {
-              <span class="bd-breadcrumb__item">
-                <a href="@url">@label</a>
-              </span>
-              <span class="bd-breadcrumb__separator">
-                <i class="fa-solid fa-chevron-right"></i>
-              </span>
-            }
-            else
-            {
-              <span class="bd-breadcrumb__item bd-breadcrumb__item--active">
-                @label
-              </span>
-            }
-          }
-        </nav>
-
-        <!-- Global search -->
-        <div class="bd-topbar__search">
-          <input type="text"
-                 id="bd-global-search"
-                 placeholder="Search... (Ctrl+K)"
-                 autocomplete="off"
-                 aria-label="Global search" />
-          <span class="bd-topbar__search-kbd">⌘K</span>
+    <!-- ════════════════════════════════════════════════════════════
+         APP SHELL SKELETON — shown during boot, hidden when ready
+         ════════════════════════════════════════════════════════════ -->
+    <div id="bdAppSkeleton" class="bd-app-skeleton">
+        <div class="bd-skeleton-topbar"></div>
+        <div class="bd-skeleton-body">
+            <div class="bd-skeleton-sidebar"></div>
+            <div class="bd-skeleton-content">
+                <div class="bd-skeleton-line w-60"></div>
+                <div class="bd-skeleton-line w-40"></div>
+                <div class="bd-skeleton-line w-80"></div>
+            </div>
         </div>
-      </div>
+    </div>
 
-      <!-- Right actions -->
-      <div class="bd-topbar__actions">
-        <!-- Notification bell -->
-        <button id="bd-notification-btn"
-                class="bd-topbar__action-btn"
-                aria-label="Notifications"
-                title="Notifications">
-          <i class="fa-solid fa-bell"></i>
-          <span id="bd-notification-badge"
-                class="bd-badge d-none">0</span>
-        </button>
+    <!-- ════════════════════════════════════════════════════════════
+         MAIN APP SHELL — hidden during boot, shown when ready
+         ════════════════════════════════════════════════════════════ -->
+    <div id="bdAppShell" class="bd-app-shell" style="display:none;">
 
-        <!-- Theme switcher -->
-        <button id="bd-theme-btn"
-                class="bd-topbar__action-btn"
-                aria-label="Switch theme"
-                title="Theme settings">
-          <i class="fa-solid fa-palette"></i>
-        </button>
+        <!-- ── TOPBAR ── -->
+        @await Html.PartialAsync("_Topbar")
 
-        <!-- Settings -->
-        <button id="bd-settings-btn"
-                class="bd-topbar__action-btn"
-                aria-label="Settings"
-                title="Settings">
-          <i class="fa-solid fa-gear"></i>
-        </button>
+        <!-- ── BODY WRAPPER ── -->
+        <div class="bd-body-wrapper">
 
-        <!-- Divider -->
-        <div style="width:1px;height:24px;background:#e5e7eb;margin:0 4px;"></div>
+            <!-- ── SIDEBAR ── -->
+            @await Html.PartialAsync("_Sidebar")
 
-        <!-- User avatar -->
-        <button id="bd-user-btn"
-                class="bd-topbar__action-btn"
-                style="width:auto;gap:8px;padding:0 8px;"
-                aria-label="User menu">
-          <img id="bd-user-avatar"
-               src="/img/default-avatar.png"
-               alt="Profile"
-               class="bd-topbar__avatar" />
-          <span id="bd-user-name"
-                class="d-none d-md-inline"
-                style="font-size:0.875rem;font-weight:500;
-            color:#374151;max-width:120px;
-            white-space:nowrap;overflow:hidden;
-            text-overflow:ellipsis;">
-          </span>
-          <i class="fa-solid fa-chevron-down"
-             style="font-size:0.7rem;color:#9ca3af;"></i>
-        </button>
-      </div>
-    </header>
+            <!-- ── MAIN CONTENT ── -->
+            <main class="bd-main" id="bdMain" role="main">
 
-    <!-- ── SIDEBAR ─────────────────────────────────────────────── -->
-    <aside id="bd-sidebar" class="bd-sidebar" role="navigation"
-           aria-label="Main navigation">
-      @await Html.PartialAsync("_Sidebar", menu)
-    </aside>
+                <!-- ── PAGE HEADER (breadcrumb + title + actions) ── -->
+                @await Html.PartialAsync("_PageHeader")
 
-    <!-- ── MAIN CONTENT ────────────────────────────────────────── -->
-    <main id="bd-content" class="bd-content" role="main">
-      <!-- NProgress bar -->
-      <div id="bd-progress-bar"></div>
+                <!-- ── PAGE CONTENT ── -->
+                <div class="bd-page-content" id="bdPageContent">
+                    @RenderBody()
+                </div>
 
-      <!-- Inner scroll area -->
-      <div class="bd-content__inner" id="bd-main-content">
-        @RenderBody()
-      </div>
-    </main>
+            </main>
+        </div>
 
-    <!-- ── FOOTER ──────────────────────────────────────────────── -->
-    <footer class="bd-footer" role="contentinfo">
-      <span>© @DateTime.Now.Year bdDevs. All rights reserved.</span>
-      <span id="bd-last-login" style="font-size:0.78rem;"></span>
-      <span>v1.0.0</span>
-    </footer>
+        <!-- ── FOOTER ── -->
+        @await Html.PartialAsync("_Footer")
 
-  </div><!-- /.bd-app -->
-  <!-- ══ TOAST HOST ════════════════════════════════════════════ -->
-  <div id="bd-toast-host" aria-live="polite" aria-atomic="false"></div>
+    </div>
 
-  <!-- ══ NOTIFICATION PANEL ════════════════════════════════════ -->
-  @await Html.PartialAsync("_NotificationPanel")
+    <!-- ════════════════════════════════════════════════════════════
+         GLOBAL HOST CONTAINERS
+         ════════════════════════════════════════════════════════════ -->
 
-  <!-- ══ COMMAND PALETTE ═══════════════════════════════════════ -->
-  @await Html.PartialAsync("_CommandPalette")
+    <!-- Toast host -->
+    <div id="bdToastHost" class="bd-toast-host" aria-live="polite" aria-atomic="false"></div>
 
-  <!-- ══ DROPDOWNS (portals) ═══════════════════════════════════ -->
-  <div id="bd-user-dropdown" class="bd-dropdown d-none"></div>
-  <div id="bd-theme-dropdown" class="bd-dropdown d-none"></div>
+    <!-- Notification panel -->
+    @await Html.PartialAsync("_NotificationPanel")
 
-  <!-- ══ SCRIPTS ═══════════════════════════════════════════════ -->
-  <!-- jQuery (Kendo dependency) -->
-  <script src="/lib/jquery/dist/jquery.min.js"></script>
-  <!-- Kendo UI -->
-  <script src="/lib/kendo/js/kendo.all.min.js"></script>
-  <!-- Core bundle (TypeScript compiled) -->
-  <script src="~/js/dist/bundle.js" asp-append-version="true"></script>
-  <!-- App shell init -->
-  <script src="~/js/shell-init.js" asp-append-version="true"></script>
+    <!-- Command palette -->
+    @await Html.PartialAsync("_CommandPalette")
 
-  @await RenderSectionAsync("Scripts", required: false)
+    <!-- Global modal host (Kendo Window renders here) -->
+    <div id="bdModalHost"></div>
+
+    <!-- Session timeout modal -->
+    <div id="bdSessionModal" class="bd-session-modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="bdSessionModalTitle">
+        <div class="bd-session-modal-box">
+            <div class="bd-session-modal-icon">⏱</div>
+            <h3 id="bdSessionModalTitle">Session Expiring Soon</h3>
+            <p id="bdSessionModalMsg">Your session will expire in <strong id="bdSessionCountdown">3:00</strong>. Do you want to continue?</p>
+            <div class="bd-session-modal-actions">
+                <button id="bdSessionContinue" class="bd-btn bd-btn-primary">Continue Session</button>
+                <button id="bdSessionLogout" class="bd-btn bd-btn-ghost">Logout Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sidebar backdrop -->
+    <div id="bdSidebarBackdrop" class="bd-sidebar-backdrop" style="display:none;"></div>
+
+    <!-- ════════════════════════════════════════════════════════════
+         SCRIPTS
+         ════════════════════════════════════════════════════════════ -->
+
+    <!-- jQuery (Kendo dependency) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <!-- Kendo UI -->
+    <script src="https://kendo.cdn.telerik.com/2024.4.1112/js/kendo.all.min.js"></script>
+
+    <!-- NProgress -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+
+    <!-- ── CORE APP SCRIPTS (order matters) ── -->
+    <script src="~/js/app.js" asp-append-version="true"></script>
+    <script src="~/js/loading.js" asp-append-version="true"></script>
+    <script src="~/js/toast.js" asp-append-version="true"></script>
+    <script src="~/js/theme-switcher.js" asp-append-version="true"></script>
+    <script src="~/js/bd-modal.js" asp-append-version="true"></script>
+    <script src="~/js/notification-center.js" asp-append-version="true"></script>
+    <script src="~/js/command-palette.js" asp-append-version="true"></script>
+    <script src="~/js/session-guard.js" asp-append-version="true"></script>
+    <script src="~/js/form-guard.js" asp-append-version="true"></script>
+    <script src="~/js/sidebar.js" asp-append-version="true"></script>
+
+    <!-- ── PAGE-LEVEL SCRIPTS ── -->
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- ── BOOT SEQUENCE ── -->
+    <script>
+        // Pass server-side config to JS
+        window.bdConfig = {
+            apiBase: '@Url.Content("~/api")',
+            hubUrl: '@Url.Content("~/hubs/notification")',
+            jwtExpiresAt: '@ViewData["JwtExpiresAt"]',
+            userId: '@ViewData["UserId"]',
+            userDisplayName: '@Html.Raw(ViewData["UserDisplayName"] ?? "")',
+            userAvatar: '@ViewData["UserAvatar"]',
+            currentModule: '@ViewData["Module"]',
+            currentPermissions: @Html.Raw(ViewData["Permissions"] ?? "[]"),
+            themeFamily: '@ViewData["ThemeFamily"]',
+            themeMode: '@ViewData["ThemeMode"]',
+            density: '@ViewData["Density"]',
+        };
+
+        // Boot the app shell
+        document.addEventListener('DOMContentLoaded', function () {
+            bdApp.boot();
+        });
+    </script>
 </body>
 </html>
