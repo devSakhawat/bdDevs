@@ -1,6 +1,5 @@
 ﻿namespace bdDevs.Contracts.Responses;
 
-
 public class StandardApiResponse<T>
 {
 	public bool Success { get; init; }

@@ -19,8 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Modules\Modules.CRM\Modules.CRM.csproj" />
     <ProjectReference Include="..\..\SharedKernel\bdDevs.Infrastructure\bdDevs.Infrastructure.csproj" />
   </ItemGroup>
+
+  <!--<ItemGroup>
+    <ProjectReference Include="..\..\Modules\Modules.CRM\Modules.CRM.csproj" />
+    <ProjectReference Include="..\..\SharedKernel\bdDevs.Infrastructure\bdDevs.Infrastructure.csproj" />
+  </ItemGroup>-->
 
 </Project>

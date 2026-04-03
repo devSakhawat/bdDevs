@@ -7,7 +7,6 @@ using System.Text.Json;
 
 namespace bdDevs.Api.Controllers;
 
-
 [Authorize]
 [ApiController]
 [Route("api/user/preference")]
