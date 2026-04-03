@@ -1,11 +1,11 @@
-﻿using bdDevs.Infrastructure.Entities;
+﻿//using bdDevs.Infrastructure.Entities;
 
-namespace bdDevs.Infrastructure.Identity;
+//namespace bdDevs.Infrastructure.Identity;
 
-public interface IJwtService
-{
-	string GenerateAccessToken(AppUser user, UserProfile profile,
-														 IList<string> roles, IList<string> permissions);
-	string GenerateRefreshToken();
-	bool ValidateRefreshToken(string token);
-}
+//public interface IJwtService
+//{
+//	string GenerateAccessToken(AppUser user, UserProfile profile,
+//														 IList<string> roles, IList<string> permissions);
+//	string GenerateRefreshToken();
+//	bool ValidateRefreshToken(string token);
+//}

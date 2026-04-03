@@ -1,9 +1,9 @@
-﻿using bdDevs.Infrastructure.Entities;
-using Microsoft.AspNetCore.Identity;
+﻿//using bdDevs.Infrastructure.Entities;
+//using Microsoft.AspNetCore.Identity;
 
-namespace bdDevs.Infrastructure.Identity;
+//namespace bdDevs.Infrastructure.Identity;
 
-public class AppUser : IdentityUser
-{
-	public virtual UserProfile? Profile { get; set; }
-}
+//public class AppUser : IdentityUser
+//{
+//	public virtual UserProfile? Profile { get; set; }
+//}
