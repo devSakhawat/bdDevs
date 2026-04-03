@@ -105,8 +105,56 @@ window.bdCommandPalette = (function () {
     }
 
     // ─────────────────────────────────────────────────────────
-    //  SEARCH
+    //  FUZZY MATCH SCORING
     // ─────────────────────────────────────────────────────────
+    /**
+     * Calculate fuzzy match score for a string against a query
+     * @param {string} str - The string to match against
+     * @param {string} query - The search query
+     * @returns {number} Match score (higher is better, 0 means no match)
+     */
+    function _fuzzyScore(str, query) {
+        str = str.toLowerCase();
+        query = query.toLowerCase();
+
+        // Exact match gets highest score
+        if (str === query) return 1000;
+
+        // Starts with query gets high score
+        if (str.startsWith(query)) return 900;
+
+        let score = 0;
+        let queryIndex = 0;
+        let lastMatchIndex = -1;
+
+        // Check each character of query
+        for (let i = 0; i < str.length && queryIndex < query.length; i++) {
+            if (str[i] === query[queryIndex]) {
+                // Consecutive matches get bonus
+                if (lastMatchIndex === i - 1) {
+                    score += 10;
+                }
+                // Match at word boundary gets bonus
+                if (i === 0 || str[i - 1] === ' ' || str[i - 1] === '-') {
+                    score += 8;
+                }
+                score += 5;
+                lastMatchIndex = i;
+                queryIndex++;
+            }
+        }
+
+        // Return score only if all query characters were matched
+        return queryIndex === query.length ? score : 0;
+    }
+
+    // ─────────────────────────────────────────────────────────
+    //  SEARCH WITH FUZZY MATCHING
+    // ─────────────────────────────────────────────────────────
+    /**
+     * Search commands with fuzzy matching
+     * @param {string} query - Search query
+     */
     function _search(query) {
         if (!query.trim()) {
             _renderRecent();
@@ -116,11 +164,24 @@ window.bdCommandPalette = (function () {
         }
 
         const q = query.toLowerCase();
-        _filtered = _allCommands().filter(cmd =>
-            cmd.label.toLowerCase().includes(q) ||
-            (cmd.group || '').toLowerCase().includes(q) ||
-            cmd.id.toLowerCase().includes(q)
-        );
+        const allCmds = _allCommands();
+
+        // Calculate scores for each command
+        const scored = allCmds.map(cmd => {
+            const labelScore = _fuzzyScore(cmd.label, q);
+            const groupScore = _fuzzyScore(cmd.group || '', q) * 0.5;
+            const idScore = _fuzzyScore(cmd.id, q) * 0.3;
+
+            return {
+                cmd,
+                score: Math.max(labelScore, groupScore, idScore)
+            };
+        }).filter(item => item.score > 0);
+
+        // Sort by score (highest first)
+        scored.sort((a, b) => b.score - a.score);
+
+        _filtered = scored.map(item => item.cmd);
 
         // Hide recent when searching
         const recentSection = document.getElementById('bdCpRecent');
