@@ -125,6 +125,14 @@
     <!-- NProgress -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
 
+    <!-- ── CORE UTILITIES (loaded before app.js) ── -->
+    <script src="~/js/core/event-bus.js" asp-append-version="true"></script>
+    <script src="~/js/core/notify.js" asp-append-version="true"></script>
+    <script src="~/js/core/api.js" asp-append-version="true"></script>
+    <script src="~/js/core/permissions.js" asp-append-version="true"></script>
+    <script src="~/js/core/grid-base.js" asp-append-version="true"></script>
+    <script src="~/js/core/form-base.js" asp-append-version="true"></script>
+
     <!-- ── CORE APP SCRIPTS (order matters) ── -->
     <script src="~/js/app.js" asp-append-version="true"></script>
     <script src="~/js/loading.js" asp-append-version="true"></script>
