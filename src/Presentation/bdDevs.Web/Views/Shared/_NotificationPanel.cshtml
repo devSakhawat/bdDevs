@@ -1,32 +1,64 @@
-<div id="bd-notification-panel"
-     class="bd-notification-panel d-none"
-     role="dialog"
-     aria-label="Notifications">
-  <div class="bd-notification-panel__header">
-    <span class="bd-notification-panel__title">
-      <i class="fa-solid fa-bell me-2"></i>Notifications
-    </span>
-    <div style="display:flex;gap:8px;align-items:center;">
-      <button id="bd-mark-all-read"
-              class="btn btn-link btn-sm p-0"
-              style="font-size:0.8rem;">
-        Mark all read
-      </button>
-      <button id="bd-notification-close"
-              class="bd-topbar__action-btn"
-              style="width:28px;height:28px;">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+@* ╔══════════════════════════════════════════════════
+   ║  _NotificationPanel.cshtml
+   ║  Bell icon drawer — SignalR real-time push
+   ╚══════════════════════════════════════════════════ *@
+
+<div class="bd-notification-panel" id="bdNotificationPanel"
+     role="dialog" aria-label="Notifications" aria-hidden="true"
+     style="display:none;">
+
+    <!-- Header -->
+    <div class="bd-notification-header">
+        <h2 class="bd-notification-title">
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 10a5 5 0 00-10 0v3l-1.5 2.5h13L15 13v-3z"/>
+                <path d="M10 18a2 2 0 004 0"/>
+            </svg>
+            Notifications
+            <span class="bd-notification-count" id="bdNotifCount" style="display:none;">0</span>
+        </h2>
+        <div class="bd-notification-header-actions">
+            <button class="bd-notif-action-btn" id="bdMarkAllRead" title="Mark all as read">
+                <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 10l4 4 10-10"/>
+                </svg>
+                All read
+            </button>
+            <button class="bd-notif-close" id="bdNotifClose" aria-label="Close notifications">✕</button>
+        </div>
     </div>
-  </div>
-  <div id="bd-notification-list"
-       class="bd-notification-panel__list">
-    <!-- populated by notification-center.ts -->
-    <div class="bd-notification-empty">
-      <i class="fa-solid fa-inbox"></i>
-      <p>No notifications</p>
+
+    <!-- Filter Tabs -->
+    <div class="bd-notification-tabs">
+        <button class="bd-notif-tab active" data-filter="all">All</button>
+        <button class="bd-notif-tab" data-filter="unread">Unread</button>
+        <button class="bd-notif-tab" data-filter="info">Info</button>
+        <button class="bd-notif-tab" data-filter="warning">Alerts</button>
     </div>
-  </div>
+
+    <!-- Notification List -->
+    <div class="bd-notification-list" id="bdNotifList">
+        <!-- Loading state -->
+        <div class="bd-notif-loading" id="bdNotifLoading">
+            <div class="bd-skeleton-notif"></div>
+            <div class="bd-skeleton-notif"></div>
+            <div class="bd-skeleton-notif"></div>
+        </div>
+
+        <!-- Empty state -->
+        <div class="bd-notif-empty" id="bdNotifEmpty" style="display:none;">
+            <svg width="40" height="40" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+                <path d="M15 10a5 5 0 00-10 0v3l-1.5 2.5h13L15 13v-3z"/>
+                <path d="M10 18a2 2 0 004 0"/>
+            </svg>
+            <p>No notifications</p>
+        </div>
+
+        <!-- Items rendered by notification-center.js -->
+        <div id="bdNotifItems"></div>
+    </div>
+
 </div>
-<div id="bd-notification-backdrop"
-     class="bd-sidebar-backdrop"></div>
+
+<!-- Notification panel backdrop -->
+<div class="bd-notif-backdrop" id="bdNotifBackdrop" style="display:none;"></div>
