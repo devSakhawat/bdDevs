@@ -11,4 +11,9 @@
     <ProjectReference Include="..\..\SharedKernel\bdDevs.Infrastructure\bdDevs.Infrastructure.csproj" />
   </ItemGroup>
 
+  <!--<ItemGroup>
+    <ProjectReference Include="..\..\SharedKernel\bdDevs.Application\bdDevs.Application.csproj" />
+    <ProjectReference Include="..\..\SharedKernel\bdDevs.Infrastructure\bdDevs.Infrastructure.csproj" />
+  </ItemGroup>-->
+
 </Project>

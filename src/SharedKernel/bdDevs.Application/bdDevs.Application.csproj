@@ -18,4 +18,8 @@
     <ProjectReference Include="..\bdDevs.Domain\bdDevs.Domain.csproj" />
   </ItemGroup>
 
+  <!--<ItemGroup>
+    <ProjectReference Include="..\bdDevs.Domain\bdDevs.Domain.csproj" />
+  </ItemGroup>-->
+
 </Project>

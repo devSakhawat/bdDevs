@@ -7,8 +7,8 @@
   </PropertyGroup>
 
 
-	<Target Name="NpmInstall" BeforeTargets="NpmBuild" Condition="!Exists('$(ProjectDir)node_modules')">
+	<!--<Target Name="NpmInstall" BeforeTargets="NpmBuild" Condition="!Exists('$(ProjectDir)node_modules')">
 		<Exec Command="npm install" WorkingDirectory="$(ProjectDir)" />
-	</Target>
+	</Target>-->
 
 </Project>

@@ -27,4 +27,8 @@
     <ProjectReference Include="..\bdDevs.Application\bdDevs.Application.csproj" />
   </ItemGroup>
 
+  <!--<ItemGroup>
+    <ProjectReference Include="..\bdDevs.Application\bdDevs.Application.csproj" />
+  </ItemGroup>-->
+
 </Project>
