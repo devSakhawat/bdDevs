@@ -6,9 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-	<Target Name="NpmBuild" BeforeTargets="Build">
-		<Exec Command="npm run build" WorkingDirectory="$(ProjectDir)" />
-	</Target>
 
 	<Target Name="NpmInstall" BeforeTargets="NpmBuild" Condition="!Exists('$(ProjectDir)node_modules')">
 		<Exec Command="npm install" WorkingDirectory="$(ProjectDir)" />
