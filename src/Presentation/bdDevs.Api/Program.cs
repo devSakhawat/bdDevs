@@ -11,7 +11,7 @@ builder.AddSerilog();
 
 //builder.Services.AddInfrastructure(builder.Configuration).AddApplicationServices().AddSignalR().Services.AddControllers();
 // alternatively, to keep it more organized:
-builder.Services.AddInfrastructure(builder.Configuration);
+//builder.Services.AddInfrastructure(builder.Configuration);
 //builder.Services.AddApplicationServices();
 builder.Services.AddApplicationServices(typeof(bdDevs.Application.Common.Behaviors.ValidationBehavior<,>));
 builder.Services.AddSignalR();
@@ -65,8 +65,8 @@ app.MapHub<NotificationHub>("/hubs/notifications");
 // app.MapControllers() will be add later
 // app.MapControllers() add to just below fo app.MapHub<NotificationHub>("/hubs/notifications");
 app.UseHangfireDashboardSecured();
-// Recurring jobs register
-RecurringJobsRegistrar.RegisterAll();
+//// Recurring jobs register
+//RecurringJobsRegistrar.RegisterAll();
 
 
 app.Run();

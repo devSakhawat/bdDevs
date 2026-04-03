@@ -1,5 +1,5 @@
-﻿using MediatR;
+﻿//using MediatR;
 
-namespace bdDevs.Domain.Common;
+//namespace bdDevs.Domain.Common;
 
-public interface IDomainEvent : INotification { }
+//public interface IDomainEvent : INotification { }
