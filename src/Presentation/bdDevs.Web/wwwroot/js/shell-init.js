@@ -20,7 +20,7 @@
             }
         }
 
-        // bootShell() function-এর ভেতরে এই line add করো:
+        // Apply navigation highlighting in bootShell() function
         // navigationService apply
         if (window.bdNav) {
             window.bdNav.apply(window.location.pathname);
@@ -29,7 +29,7 @@
         try {
             // Load user context from JWT claims
             loadUserContext();
-            // bootShell() এর ভেতরে loadUserContext() এর পরে:
+            // Sync theme from database after loading user context
             await syncThemeFromDB();
 
             // Show app shell
@@ -56,10 +56,10 @@
         }
     }
 
-    // bootShell() এর শুরুতে — token check করার আগেই theme apply
-    // (themeService.init() bundle.ts এ DOMContentLoaded এ হয়ে যায়)
-    // এখানে শুধু DB থেকে load করে sync করো (logged-in user)
-
+    /**
+     * Sync theme preferences from database
+     * Called at boot after token check to apply user's saved theme
+     */
     async function syncThemeFromDB() {
         try {
             const result = await window.bdApi.get('/user/preference/theme');
@@ -202,7 +202,10 @@
         }
     }
 
-    // SPA navigation-এ breadcrumb update
+    /**
+     * Update breadcrumb on SPA navigation
+     * Listen for clicks on partial-loaded links
+     */
     document.addEventListener('click', async (e) => {
         const link = e.target.closest('a[data-partial="true"]');
         if (!link) return;
