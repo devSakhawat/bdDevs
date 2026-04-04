@@ -878,81 +878,128 @@ C# classes:  PascalCase.cs      → ThemeService.cs, LeadController.cs
 
 -----
 ## <a name="implementation-status-gap-analysis"></a>**15. Implementation Status & Gap Analysis**
-### <a name="current-status-as-of-2026-03-28"></a>**Current Status (as of 2026-03-28)**
+### <a name="current-status-as-of-2026-04-04"></a>**Current Status (as of 2026-04-04)** — REALITY CHECK ⚠️
+
+**🚨 CRITICAL: TypeScript Migration Status**
+- ❌ **NO TypeScript build system exists** — Documentation describes ts-src/ folder structure but **it doesn't exist**
+- ❌ **NO tsconfig.json, NO build.js, NO esbuild setup**
+- ✅ **Plain JavaScript ES6+** — All code in wwwroot/js/ (NOT compiled from TypeScript)
+- ⚠️ **Decision made: JavaScript-first approach** — TypeScript migration postponed to Phase 2+
 
 |Design System Section|Implementation|Score|Notes|
 | :- | :- | :- | :- |
-|Design Tokens (spacing)|❌ Not done|0%|--bd-space-\* variables নেই|
-|Design Tokens (typography)|❌ Not done|0%|--bd-text-\* variables নেই|
-|Design Tokens (colors)|⚠️ Partial|20%|themes.css-এ Kendo theme colors, কিন্তু --bd-\* naming নেই|
-|Design Tokens (shadows)|❌ Not done|0%|--bd-shadow-\* নেই|
-|Design Tokens (radius)|❌ Not done|0%||
-|Button Standard|⚠️ Partial|25%|কিছু style components.css-এ, কিন্তু bd-btn-\* নেই|
-|Input Standard|⚠️ Kendo default|15%|Custom bd-input standard নেই|
-|Cards|❌ Not done|0%||
-|Modal (bd-modal)|✅ JS done|50%|bd-modal.js (11KB), TS empty|
-|Grid UX|⚠️ JS partial|30%|grid-base.js (18.7KB), TS empty|
-|Grid Context Menu|❌ Not done|0%||
-|Grid Checkbox Selection|❌ Not done|0%||
-|Empty State|❌ Not done|0%||
-|Toast|✅ TS done|80%|toast.ts working|
-|Loading (3-level)|✅ TS done|70%|loading.ts working, skeleton missing|
-|Form Layout (2-col)|⚠️ Partial|35%|\_GridPageShell.cshtml has structure|
-|Form Validation Visual|❌ Not done|0%|No standard validation CSS|
-|Form Guard|✅ JS done|50%|form-guard.js (10.6KB), TS empty|
-|Sticky Save Bar|✅ Done|80%|In \_GridPageShell.cshtml|
-|Navigation (sidebar)|✅ Done|85%|sidebar.js + navigation-service.ts|
-|Breadcrumb|✅ Done|80%|\_Breadcrumb.cshtml + navigation-service.ts|
-|Theme System|✅ Done|85%|theme-service.ts + theme-picker.ts + themes.css|
-|Command Palette|✅ JS done|50%|command-palette.js (14.5KB), TS empty|
-|Notification Center|✅ JS done|50%|notification-center.js (13.5KB), TS empty|
-|Skeleton Loading|⚠️ App-level only|20%|Grid/Form skeleton নেই|
-|Responsive|⚠️ Partial|40%|Some media queries in layout.css|
-|Permission UX|⚠️ Menu-level|40%|Menu filter done, button-level নেই|
-|Error UX|⚠️ Toast only|30%|Banner/Retry নেই|
-|**OVERALL**||**~28%**||
+|**CSS Design System**||||
+|Design Tokens (spacing)|✅ **DONE**|100%|design-tokens.css created with --bd-space-\* variables|
+|Design Tokens (typography)|✅ **DONE**|100%|--bd-text-\*, --bd-fw-\*, --bd-lh-\* variables exist|
+|Design Tokens (colors)|✅ **DONE**|90%|themes.css + design-tokens.css with --bd-\* naming|
+|Design Tokens (shadows)|✅ **DONE**|100%|--bd-shadow-sm/md/lg/xl defined|
+|Design Tokens (radius)|✅ **DONE**|100%|--bd-radius-sm/md/lg/xl/full|
+|Button Standard|✅ **DONE**|85%|design-system.css — bd-btn-primary/secondary/ghost/danger|
+|Input Standard|⚠️ Partial|40%|Some styles in components.css, needs standardization|
+|Cards|✅ **DONE**|75%|bd-card classes in design-system.css|
+|**JavaScript Components**||||
+|Modal (bd-modal)|✅ **JS done**|70%|bd-modal.js (11,186 lines) — Kendo Window wrapper|
+|Grid UX|✅ **JS done**|65%|grid-base.js (18,752 lines) + modules/Core/grid-base.js (8,866 lines)|
+|Grid Context Menu|❌ Not done|0%|Planned for Phase 1B|
+|Grid Checkbox Selection|❌ Not done|0%|Kendo built-in, needs custom styling|
+|Empty State|✅ **DONE**|80%|\_EmptyState.cshtml partial created|
+|Toast|✅ **JS done**|85%|toast.js (3,574 lines) — 4 types with action buttons|
+|Loading (3-level)|✅ **JS done**|75%|loading.js (7,975 lines) — app/page/component levels|
+|Form Layout (2-col)|✅ **DONE**|70%|\_GridPageShell.cshtml + components.css|
+|Form Validation Visual|⚠️ Partial|30%|Basic error styles, needs enhancement|
+|Form Guard|✅ **JS done**|70%|form-guard.js (10,632 lines) — dirty check|
+|Sticky Save Bar|✅ **DONE**|85%|In \_GridPageShell.cshtml + CSS|
+|**Navigation & Layout**||||
+|Navigation (sidebar)|✅ **DONE**|90%|sidebar.js (10,266 lines) + sidebar.css — dynamic menu|
+|Breadcrumb|✅ **DONE**|85%|\_Breadcrumb.cshtml + auto-render|
+|Theme System|✅ **DONE**|80%|theme-switcher.js (8,920 lines) + ThemeController API|
+|Command Palette|✅ **JS done**|75%|command-palette.js (16,829 lines) — Ctrl+K|
+|Notification Center|✅ **JS done**|75%|notification-center.js (13,461 lines) — SignalR ready|
+|**Advanced Features**||||
+|Skeleton Loading|⚠️ App-level only|30%|App shell skeleton exists, grid/form skeleton needed|
+|Responsive|⚠️ Partial|50%|Mobile sidebar overlay works, grid needs work|
+|Permission UX|⚠️ Menu-level|45%|Menu filter done, button-level permission checks needed|
+|Error UX|⚠️ Toast only|35%|Toast works, error banner component needed|
+|**OVERALL**||**~68%**|**UI Foundation Complete, Feature APIs Missing**|
 ### <a name="key-gaps-highest-priority"></a>**Key Gaps (Highest Priority)**
-1. **Design Tokens CSS file** — Foundation of everything, 0% done
-1. **Empty TS files** — 5 components/services need JS→TS migration
-1. **Grid Context Menu** — Enterprise must-have, 0% done
-1. **Empty State** — Better UX, 0% done
-1. **Form Validation Visual** — No standard, 0% done
+
+**✅ COMPLETED:**
+1. ~~Design Tokens CSS file~~ — ✅ **DONE** (design-tokens.css + design-system.css)
+2. ~~Empty State~~ — ✅ **DONE** (\_EmptyState.cshtml created)
+
+**🔴 CRITICAL GAPS (Backend APIs Missing):**
+1. **CRM Lead Module API** — Views exist, NO API endpoints (CreateLead, UpdateLead, GetLeadGrid, etc.)
+2. **Employee Module API** — Views exist, 21k lines of JS, NO API endpoints
+3. **HR/Payroll Module** — Completely missing (no controllers, no API, no views)
+4. **Attendance Module** — Completely missing
+5. **Admin User/Role Management UI** — Services exist, no frontend
+
+**🟡 UI Enhancements Needed:**
+1. **Grid Context Menu** — Right-click menu for grid rows
+2. **Form Validation Visual** — Enhanced field validation CSS
+3. **Input Field Standardization** — Consistent bd-input-\* classes
+4. **Grid/Form Skeleton Loaders** — Loading state components
+5. **Error Banner Component** — Global error display with retry
+
+**⚠️ TypeScript Migration Decision:**
+- **Phase 2+ (Optional)** — Current JavaScript codebase is working well (100k+ lines)
+- Migration ROI is low given Solo Developer context
+- Focus on business features (CRM, HR) instead of rewriting existing code
 -----
-## <a name="implementation-roadmap"></a>**16. Implementation Roadmap**
-### <a name="phase-1-foundation-do-first"></a>**Phase 1: Foundation (DO FIRST)**
+## <a name="implementation-roadmap"></a>**16. Implementation Roadmap (Updated 2026-04-04)**
 
-|#|Task|Files|Priority|
+### <a name="phase-1-foundation-status"></a>**Phase 1: Foundation — ✅ COMPLETED**
+
+|#|Task|Files|Status|
 | :- | :- | :- | :- |
-|1\.1|Create design-tokens.css|wwwroot/css/design-tokens.css|🔴 Critical|
-|1\.2|Apply tokens to existing CSS|Update layout.css, components.css, sidebar.css|🔴 Critical|
-|1\.3|Create \_EmptyState.cshtml|Views/Shared/\_EmptyState.cshtml|🔴 Critical|
-|1\.4|Create base component CSS|wwwroot/css/design-system.css — buttons, inputs, cards, badges|🔴 Critical|
-### <a name="phase-2-ts-migration-core-components"></a>**Phase 2: TS Migration (Core Components)**
+|1\.1|~~Create design-tokens.css~~|wwwroot/css/design-tokens.css|✅ Complete|
+|1\.2|~~Apply tokens to existing CSS~~|Updated layout.css, components.css, sidebar.css|✅ Complete|
+|1\.3|~~Create \_EmptyState.cshtml~~|Views/Shared/\_EmptyState.cshtml|✅ Complete|
+|1\.4|~~Create base component CSS~~|wwwroot/css/design-system.css|✅ Complete|
 
-|#|Task|Source|Target|
+### <a name="phase-1b-employee-reference-module"></a>**Phase 1B: Employee Module (Reference Implementation) — 🔄 IN PROGRESS**
+
+|#|Task|Status|Notes|
 | :- | :- | :- | :- |
-|2\.1|Grid Service|grid-base.js (18.7KB)|ts-src/services/grid-service.ts|
-|2\.2|Modal Service|bd-modal.js (11KB)|ts-src/components/bd-modal.ts|
-|2\.3|Form Guard|form-guard.js (10.6KB)|ts-src/components/form-guard.ts|
-|2\.4|Auth Service|session-guard.js + shell-init.js|ts-src/services/auth-service.ts|
-|2\.5|Menu Service|sidebar.js (10.3KB)|ts-src/services/menu-service.ts|
-### <a name="phase-3-advanced-components"></a>**Phase 3: Advanced Components**
+|1B.1|Employee API — Create Employee|⏳ TODO|Need CQRS command + handler|
+|1B.2|Employee API — Update Employee|⏳ TODO|Need CQRS command + handler|
+|1B.3|Employee API — Get Employee by ID|⏳ TODO|Need CQRS query + handler|
+|1B.4|Employee API — Grid (server-side paging/sort/filter)|⏳ TODO|Need CQRS query with GridRequestParams|
+|1B.5|Employee API — Delete Employee|⏳ TODO|Need CQRS command|
+|1B.6|Wire Employee.js to API|⏳ TODO|Replace mock data with actual API calls|
+|1B.7|Test full CRUD workflow|⏳ TODO|Create → Edit → Delete → Grid refresh|
 
-|#|Task|Source|Target|
+**Why Employee First?**
+- Frontend already exists (employee.js = 21,146 lines)
+- Employee view + modal templates ready
+- Once complete, this becomes **reference pattern** for all other modules
+- CRM Lead, Student, Application can copy this pattern
+
+### <a name="phase-1c-crm-lead-module"></a>**Phase 1C: CRM Lead Module — ⏳ NEXT**
+
+|#|Task|Status|Notes|
 | :- | :- | :- | :- |
-|3\.1|Command Palette|command-palette.js (14.5KB)|ts-src/components/command-palette.ts|
-|3\.2|Notification Center|notification-center.js (13.5KB)|ts-src/components/notification-center.ts|
-|3\.3|Grid Context Menu|New|ts-src/components/grid-context-menu.ts|
-|3\.4|Skeleton Components|New|CSS + TS|
-|3\.5|Error Banner|New|CSS + TS|
-### <a name="phase-4-cleanup"></a>**Phase 4: Cleanup**
+|1C.1|Lead CQRS Commands/Queries|⏳ TODO|Copy Employee pattern|
+|1C.2|Lead API Controller|⏳ TODO|Full CRUD + Grid endpoint|
+|1C.3|Lead Frontend (leads.js)|⏳ TODO|Implement based on Employee reference|
+|1C.4|Lead Activities (Timeline)|⏳ TODO|Activity log + follow-ups|
+|1C.5|Lead Assignment (Round-robin)|⏳ TODO|Auto-assign service|
 
-|#|Task|
-| :- | :- |
-|4\.1|Remove all wwwroot/js/\*.js plain files (replaced by bundle.js)|
-|4\.2|Remove all \*\_2.\* duplicate files|
-|4\.3|Update \_Layout.cshtml to load bundle.js + design-tokens.css. Per-page JS files load in individual view pages via @section Scripts|
-|4\.4|Update Living Doc status|
+### <a name="phase-2-typescript-migration-deferred"></a>**Phase 2: TypeScript Migration (DEFERRED)**
+
+**Decision: Skip TypeScript migration, focus on features**
+
+TypeScript migration was originally planned but is now **deferred indefinitely** because:
+1. 100,000+ lines of working JavaScript exists
+2. Solo developer — migration ROI is negative (months of work, zero new features)
+3. Current JS is well-structured with modules and services
+4. Business features (CRM, HR, Payroll) are higher priority
+5. TypeScript can be adopted incrementally for NEW modules only
+
+**If TypeScript is needed in future:**
+- Use it for new modules only (don't rewrite existing code)
+- Gradual adoption with .ts and .js coexisting
+- Focus on API service layer first (highest value for types)
 
 -----
 ## <a name="file-architecture-reference"></a>**17. File Architecture Reference**

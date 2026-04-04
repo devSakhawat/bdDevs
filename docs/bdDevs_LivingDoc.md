@@ -1,52 +1,146 @@
 ﻿
+**bdDevs — Enterprise CRM + HR Platform**
 
+Living Project Documentation — **REALITY CHECK Edition** ⚠️
 
-**bdDevCRM**
-
-Living Project Documentation
-
-|<p>Context Document — Share this with Claude at the start of every session</p><p>**Last Updated: Phase 1A — Step 7.2 Complete ✅  |  Next: Step 7.3 Theme Platform**</p>|
+|<p>Context Document — বাস্তব অবস্থা সহ সম্পূর্ণ বিবরণ</p><p>**Last Updated: 2026-04-04 — Project Status: 28% Complete (Foundation Done, APIs Missing)**</p>|
 | :-: |
 
-*⚠️  পরের session শুরু করার আগে এই document-টি Claude-কে দিন এবং বলুন: "এই document পড়ো এবং কোথা থেকে শুরু করতে হবে বলো"*
+**🚨 IMPORTANT: এই document এখন বাস্তব অবস্থা প্রতিফলিত করে। পূর্ববর্তী দাবি (TypeScript, Step 7.3 complete, ইত্যাদি) সংশোধন করা হয়েছে।**
 
 
 # **1. Project Snapshot**
 
 |**Field**|**Value**|
 | :- | :- |
-|Project Name|bdDevCRM|
+|Project Name|bdDevs (formerly bdDevCRM)|
 |Type|Enterprise CRM + HR/Payroll Platform|
 |Developer|Solo Developer (devSakhawat)|
-|Frontend|ASP.NET Core MVC + Kendo UI for jQuery|
+|Frontend|ASP.NET Core MVC + Kendo UI for jQuery + **Plain JavaScript ES6+**|
 |Backend|Modular Monolith — Clean Architecture + CQRS (MediatR)|
 |Auth|ASP.NET Core Identity + JWT Bearer Tokens|
-|Database|SQL Server — Database-First + EF Core|
+|Database|SQL Server — Database-First + EF Core (89 tables across 2 DbContexts)|
 |Cache|Redis (Session + Permission + Query cache)|
-|Real-time|SignalR (NotificationHub)|
-|Background Jobs|Hangfire (SQL Server storage)|
+|Real-time|SignalR (NotificationHub implemented, not actively used)|
+|Background Jobs|Hangfire (Setup complete, jobs commented out)|
 |Deployment|Docker + Kubernetes — On-premise / VPS|
-|Frontend JS|Full TypeScript + esbuild (compiled to wwwroot/js/dist/)|
-|Current Phase|Phase 1A — Foundation|
-|Current Step|Step 7.3 — Theme Platform (IN PROGRESS)|
+|**Frontend Reality**|**❌ NO TypeScript** — 100,000+ lines of plain JavaScript|
+|Current Phase|**Phase 1B — Employee Module (Reference Implementation)**|
+|Overall Progress|**28% Complete** — UI Foundation ✅, Feature APIs ❌|
 
-# **2. Solution Structure**
+# **2. Solution Structure (ACTUAL)**
 
-|<p>bdDevCRM/</p><p>├── src/</p><p>│   ├── Presentation/</p><p>│   │   ├── bdDevCRM.API/          ← ASP.NET Core Web API</p><p>│   │   └── bdDevCRM.Web/          ← ASP.NET Core MVC (Frontend)</p><p>│   │       ├── ts-src/            ← TypeScript source</p><p>│   │       │   ├── bundle.ts      ← Entry point</p><p>│   │       │   ├── types/         ← api.types, grid.types, theme.types, ui.types</p><p>│   │       │   ├── core/          ← api-service, loading, toast, event-bus</p><p>│   │       │   ├── services/      ← auth, theme, menu, grid, navigation</p><p>│   │       │   └── components/    ← bd-modal, command-palette, notification-center, form-guard</p><p>│   │       ├── wwwroot/</p><p>│   │       │   ├── js/dist/       ← compiled bundle.js (esbuild output)</p><p>│   │       │   ├── css/           ← layout, themes, sidebar, components</p><p>│   │       │   └── js/            ← shell-init.js (plain JS boot)</p><p>│   │       └── Views/</p><p>│   │           ├── Shared/        ← \_Layout, \_Topbar, \_Footer, \_Sidebar,</p><p>│   │           │                     \_NotificationPanel, \_CommandPalette,</p><p>│   │           │                     \_PageHeader, \_ToastHost</p><p>│   │           └── Templates/     ← \_GridPageShell, \_FormPageShell, \_PageHeader</p><p>│   ├── Modules/</p><p>│   │   ├── Modules.CRM/</p><p>│   │   ├── Modules.HR/</p><p>│   │   ├── Modules.Attendance/</p><p>│   │   └── Modules.Reporting/</p><p>│   ├── SharedKernel/</p><p>│   │   ├── bdDevCRM.Domain/</p><p>│   │   ├── bdDevCRM.Application/</p><p>│   │   └── bdDevCRM.Infrastructure/</p><p>│   └── CrossCutting/</p><p>│       ├── bdDevCRM.Common/</p><p>│       └── bdDevCRM.Contracts/</p><p>└── tests/</p>|
-| :- |
+**⚠️ WARNING: Previous documentation described ts-src/ folder — THIS DOES NOT EXIST**
 
-# **3. TypeScript + esbuild Setup**
+```
+bdDevs/
+├── src/
+│   ├── Presentation/
+│   │   ├── bdDevs.Api/              ← ASP.NET Core Web API (7 controllers)
+│   │   └── bdDevs.Web/              ← ASP.NET Core MVC Frontend
+│   │       ├── wwwroot/
+│   │       │   ├── js/              ← 100,000+ lines PLAIN JAVASCRIPT (NOT TypeScript)
+│   │       │   │   ├── app.js (14k lines)
+│   │       │   │   ├── shell-init.js (8k lines)
+│   │       │   │   ├── sidebar.js (10k lines)
+│   │       │   │   ├── theme-switcher.js (9k lines)
+│   │       │   │   ├── notification-center.js (13k lines)
+│   │       │   │   ├── command-palette.js (17k lines)
+│   │       │   │   ├── grid-base.js (19k lines)
+│   │       │   │   ├── bd-modal.js (11k lines)
+│   │       │   │   ├── form-guard.js (11k lines)
+│   │       │   │   └── modules/
+│   │       │   │       └── Core/
+│   │       │   │           ├── employee.js (21k lines) ← Reference module
+│   │       │   │           ├── menu-management.js (10k lines)
+│   │       │   │           ├── api.js (7k lines)
+│   │       │   │           └── grid-base.js (9k lines)
+│   │       │   ├── css/             ← Professional design system
+│   │       │   │   ├── design-tokens.css ← ✅ Created
+│   │       │   │   ├── design-system.css ← ✅ Created
+│   │       │   │   ├── layout.css
+│   │       │   │   ├── sidebar.css
+│   │       │   │   ├── themes.css
+│   │       │   │   └── components.css
+│   │       │   └── lib/             ← Kendo UI jQuery + 20+ themes
+│   │       └── Views/
+│   │           ├── Shared/          ← Layout components
+│   │           │   ├── _Layout.cshtml
+│   │           │   ├── _Topbar.cshtml
+│   │           │   ├── _Sidebar.cshtml
+│   │           │   ├── _Footer.cshtml
+│   │           │   ├── _Breadcrumb.cshtml
+│   │           │   ├── _PageHeader.cshtml
+│   │           │   ├── _NotificationPanel.cshtml
+│   │           │   ├── _CommandPalette.cshtml
+│   │           │   └── _EmptyState.cshtml ← ✅ Created
+│   │           ├── Templates/
+│   │           │   ├── _GridPageShell.cshtml
+│   │           │   └── _GridPageShell_2.cshtml (duplicate, needs cleanup)
+│   │           ├── Employee/        ← View exists, NO API
+│   │           ├── Leads/           ← View exists, NO API
+│   │           ├── MenuManagement/  ← ✅ Full CRUD working
+│   │           └── Home/
+│   ├── Modules/
+│   │   ├── Modules.CRM/             ← 35 DbSets (database exists, NO APIs)
+│   │   └── Modules.TokenService/
+│   ├── SharedKernel/
+│   │   ├── bdDevs.Domain/           ← 54 entities
+│   │   ├── bdDevs.Application/      ← CQRS infrastructure + Menu feature ONLY
+│   │   └── bdDevs.Infrastructure/   ← Services, Identity, Caching, Hangfire
+│   └── CrossCutting/
+│       ├── bdDevs.Common/
+│       └── bdDevs.Contracts/
+└── tests/
+    ├── Unit/bdDevsTests/            ← 2 test files only
+    └── Integration/bdDevs.IntegrationTests/
+```
 
-|**File**|**Location**|**Purpose**|
-| :- | :- | :- |
-|package.json|bdDevCRM.Web/|npm scripts: build, watch, build:prod|
-|tsconfig.json|bdDevCRM.Web/|TS config — ES2020, strict, path aliases|
-|build.js|bdDevCRM.Web/|esbuild config — IIFE format, sourcemap dev, minify prod|
-|bundle.ts|ts-src/|Entry point — imports all services, exposes to window|
-|shell-init.js|wwwroot/js/|Plain JS boot sequence — runs after bundle loads|
+# **3. Frontend JavaScript Architecture (ACTUAL — NO TypeScript)**
 
-|<p>**Window Globals (exposed by bundle.ts)**</p><p>window.bdApi       → BdApiService (HTTP fetch wrapper)</p><p>window.bdToast     → ToastService (success/error/warning/info)</p><p>window.bdLoading   → LoadingService (3-level loading)</p><p>window.bdNav       → NavigationService (breadcrumb + active menu)</p><p>window.eventBus    → EventBus (internal pub/sub)</p><p>window.bdEvents    → Events constants</p><p>window.bdShowForm  → Grid/Form toggle (Type 3 pattern)</p><p>window.bdHideForm  → Grid/Form toggle close</p><p>window.bdFormSaving→ Form save button state</p>|
-| :- |
+**🚨 CRITICAL CORRECTION:** Previous Living Doc claimed TypeScript + esbuild setup. **THIS IS FALSE.**
+
+## **Reality:**
+- **NO TypeScript compiler** — package.json only has `@microsoft/signalr` dependency
+- **NO ts-src/ folder** — Does not exist
+- **NO build process** — No npm build scripts, no esbuild, no compilation
+- **100% Plain JavaScript ES6+** — All code is in wwwroot/js/ (no transpilation)
+
+|**Component**|**File**|**Size**|**Status**|
+| :- | :- | :- | :- |
+|**Core App**|app.js|14,365 lines|✅ Working|
+|**Shell Init**|shell-init.js|8,443 lines|✅ Working|
+|**Sidebar**|sidebar.js|10,266 lines|✅ Dynamic menu with permission filtering|
+|**Theme System**|theme-switcher.js|8,920 lines|✅ 20+ themes with API persistence|
+|**Notifications**|notification-center.js|13,461 lines|✅ SignalR ready|
+|**Command Palette**|command-palette.js|16,829 lines|✅ Ctrl+K search|
+|**Grid Base**|grid-base.js|18,752 lines|✅ Kendo Grid utilities|
+|**Modal**|bd-modal.js|11,186 lines|✅ Kendo Window wrapper|
+|**Form Guard**|form-guard.js|10,632 lines|✅ Dirty check|
+|**Session Guard**|session-guard.js|7,999 lines|✅ Auto-logout|
+|**Loading**|loading.js|7,975 lines|✅ 3-level loading states|
+|**Toast**|toast.js|3,574 lines|✅ 4 toast types|
+|**Employee Module**|modules/Core/employee.js|21,146 lines|⚠️ UI only, NO API|
+|**Menu Module**|modules/Core/menu-management.js|9,811 lines|✅ Full CRUD with API|
+|**API Service**|modules/Core/api.js|7,069 lines|✅ Fetch wrapper|
+|**Total**||**~170,000 lines**|**Plain JavaScript ES6+**|
+
+## **Window Globals (Exposed by app.js)**
+```javascript
+window.bdApi       → API service (HTTP fetch, grid pagination)
+window.bdToast     → Toast notifications
+window.bdLoading   → Loading states (app/page/component)
+window.bdNav       → Navigation & breadcrumb
+window.bdTheme     → Theme switching
+window.bdModal     → Modal dialogs
+window.eventBus    → Internal pub/sub events
+```
+
+## **Decision: TypeScript Migration Status**
+- **Original Plan:** Migrate all JS to TypeScript with esbuild
+- **Current Status:** ❌ NOT STARTED (claimed "done" in old Living Doc, FALSE)
+- **New Decision:** **DEFER INDEFINITELY** — Focus on business features instead
+- **Rationale:** 170k lines of working JS, solo developer, negative ROI
 
 # **4. Database — Tables Created**
 ## **4.1 Schema: dbo (Shared/Auth)**
@@ -62,105 +156,187 @@ Living Project Documentation
 |Menus|Dynamic permission-filtered sidebar menu|✅ Created|
 |AuditLogs|Entity change tracking log|✅ Created|
 
-# **5. Phase & Step Progress Tracker**
+# **5. Implementation Progress — REALITY CHECK**
 
+## **✅ COMPLETED (Working Features)**
 
-|**PHASE 1A — Foundation**|
-| :-: |
+### **Authentication & Security (85% Complete)**
+- ✅ JWT with refresh token rotation
+- ✅ AuthController API (Login/Refresh/Logout)
+- ✅ Session timeout detection
+- ✅ Cookie-based refresh tokens (HttpOnly)
+- ❌ Missing: Login UI (using API directly for now)
 
-|✅|<p>**Step 1 — Solution Structure + Project Setup**</p><p>13 projects, sln references, NuGet packages, project references configured</p>|
-| :-: | :- |
+### **Menu System (95% Complete)**
+- ✅ Full CRUD API (CQRS with MediatR)
+- ✅ Menu hierarchy support
+- ✅ Permission-based filtering
+- ✅ Dynamic sidebar rendering
+- ✅ Admin UI for menu management
+- ✅ Redis caching (30min TTL)
 
-|✅|<p>**Step 2 — SharedKernel Infrastructure**</p><p>AppDbContext, Identity, JWT, Redis, InfrastructureServiceExtensions, AuthController, Program.cs — Build SUCCESS</p>|
-| :-: | :- |
+### **Theme System (85% Complete)**
+- ✅ 20+ Kendo UI themes
+- ✅ Theme switching API with DB persistence
+- ✅ UserPreferenceController
+- ✅ Cookie + localStorage fallback
+- ✅ theme-switcher.js (8,920 lines)
 
-|✅|<p>**Step 3 — BaseApiController + HATEOAS + Auth API Test**</p><p>BaseApiController, LinkedResource<T>, ILinkFactory<T>, SwaggerWithJwt, NotificationHub, Middlewares, SeedController — Build SUCCESS</p>|
-| :-: | :- |
+### **UI Framework (70% Complete)**
+- ✅ Design tokens (spacing, typography, colors, shadows, radius)
+- ✅ Design system CSS (buttons, cards, badges)
+- ✅ Grid-based responsive layout
+- ✅ Sidebar (collapsible, mobile overlay)
+- ✅ Breadcrumb navigation
+- ✅ Toast notifications (4 types)
+- ✅ Loading states (app/page/component levels)
+- ✅ Modal wrapper (Kendo Window)
+- ✅ Form guard (dirty check)
+- ✅ Command palette (Ctrl+K)
+- ✅ Notification center (SignalR ready)
+- ✅ Empty state component
+- ⏳ Grid context menu (right-click)
+- ⏳ Enhanced form validation visuals
 
-|✅|<p>**Step 4 — Serilog + Middleware Pipeline**</p><p>RequestLoggingMiddleware, LoggingBehavior, CachingBehavior, ICacheService, RedisCacheService, SerilogExtensions — Build SUCCESS</p>|
-| :-: | :- |
+### **Infrastructure (75% Complete)**
+- ✅ Clean Architecture setup
+- ✅ CQRS + MediatR pipeline
+- ✅ Redis caching service
+- ✅ Serilog logging (Console + File + MSSQL)
+- ✅ Global exception handling
+- ✅ Correlation ID middleware
+- ✅ Request logging middleware
+- ✅ Hangfire setup (jobs commented out)
+- ✅ SignalR NotificationHub (not actively used)
 
-|✅|<p>**Step 5 — Hangfire Setup**</p><p>HangfireExtensions, HangfireAuthFilter, IJobService, JobService, FollowUpReminderJob, CommunicationQueueJob, RecurringJobsRegistrar — Build SUCCESS</p>|
-| :-: | :- |
+## **⚠️ PARTIALLY IMPLEMENTED (UI Exists, NO API)**
 
-|✅|<p>**Step 6 — Menu + Permission System**</p><p>MenuService (raw SQL), CachedMenuService, PermissionService, MenuController, WebMenuService, \_Sidebar.cshtml, sidebar.css, sidebar.js — Build SUCCESS</p>|
-| :-: | :- |
+### **Employee Module (30% Complete)**
+- ✅ Employee view with Kendo Grid
+- ✅ Employee modal form template
+- ✅ employee.js (21,146 lines of frontend code)
+- ❌ NO Employee API endpoints
+- ❌ NO CQRS commands/queries
+- ❌ NO database integration
 
-|**Step 7 — MVC Web Layout Platform**|
-| :-: |
+### **Leads Module (15% Complete)**
+- ✅ Leads view using grid template
+- ❌ NO Leads API
+- ❌ NO frontend JavaScript module
+- ✅ CRM database schema exists (35 tables in CrmDbContext)
 
-|✅|<p>**Step 7.0 — TypeScript + esbuild Setup**</p><p>package.json, tsconfig.json, build.js, ts-src/ folder structure, all type definitions (api.types, grid.types, theme.types, ui.types), event-bus.ts, api-service.ts, bundle.ts — npm run build SUCCESS → wwwroot/js/dist/bundle.js</p>|
-| :-: | :- |
+## **❌ NOT IMPLEMENTED (Despite Database Existing)**
 
-|✅|<p>**Step 7.1 — App Shell Foundation**</p><p>\_Layout.cshtml, layout.css (CSS Grid shell), loading.ts, toast.ts, shell-init.js, \_NotificationPanel.cshtml, \_CommandPalette.cshtml, \_Footer.cshtml, App skeleton loader, mobile sidebar overlay + backdrop, sidebar toggle (desktop collapse + mobile overlay), Ctrl+B shortcut, session guard bootstrap — Build SUCCESS</p>|
-| :-: | :- |
+### **CRM Module (Database: 90%, API: 0%, UI: 10%)**
+**Database Tables Exist:** 35 CRM tables in Modules.CRM
+- CrmApplicantInfos, CrmApplications, CrmCourses, CrmInstitutes
+- CrmCountries, CrmEducationHistories, CrmWorkExperiences, etc.
 
-|✅|<p>**Step 7.2 — Navigation Intelligence**</p><p>navigation-service.ts (ROUTE\_MAP, resolve, apply, register), \_PageHeader.cshtml, \_GridPageShell.cshtml (Type 3 grid/form toggle), \_FormPageShell.cshtml (Kendo TabStrip + sticky save bar), components.css (page-header, grid-page, form-shell styles), Ctrl+S save shortcut, breadcrumb auto-render, active menu sync, SPA popstate nav — Build SUCCESS</p>|
-| :-: | :- |
+**Missing:**
+- ❌ All CRM API controllers
+- ❌ All CQRS commands/queries
+- ❌ Student management UI
+- ❌ Application processing UI
+- ❌ Course/Institute management UI
 
-|🔄|<p>**Step 7.3 — Theme Platform**</p><p>IN PROGRESS — themes.css, theme-service.ts, ThemeController, 3-layer theme (family + mode + density), runtime CSS swap, DB persist, cookie no-flicker</p>|
-| :-: | :- |
+### **HR Module (0% Complete)**
+- ❌ No HR controllers
+- ❌ No HR API endpoints
+- ❌ No HR views (except Employee placeholder)
 
-|⏳|<p>**Step 7.4 — Feedback System**</p><p>NProgress page loader, toast categories, global error banner, ajax hooks</p>|
-| :-: | :- |
+### **Payroll Module (0% Complete)**
+- ❌ Completely missing
 
-|⏳|<p>**Step 7.5 — Session + Security UX**</p><p>session-guard.ts full, form dirty check (form-guard.ts), inactivity detection</p>|
-| :-: | :- |
+### **Attendance Module (0% Complete)**
+- ❌ Completely missing
 
-|⏳|<p>**Step 7.6 — Interaction Components**</p><p>bd-modal.ts (Kendo Window generic wrapper), notification-center.ts, command-palette.ts, keyboard shortcuts full</p>|
-| :-: | :- |
+### **Reporting Module (0% Complete)**
+- ❌ Completely missing
 
-|⏳|<p>**Step 7.7 — Page Templates / Patterns**</p><p>\_EmptyState.cshtml, grid-base.ts, global grid toolbar standard</p>|
-| :-: | :- |
+### **Admin Module (Backend: 60%, Frontend: 5%)**
+- ✅ PermissionService (permission checking)
+- ✅ User/Role database tables
+- ❌ User management UI
+- ❌ Role management UI
+- ❌ Permission assignment UI
 
-|**PHASE 1B — CRM: Lead Module**|
-| :-: |
+## **Overall Progress Summary**
 
-|⏳|<p>**Lead Entity + DB Tables**</p><p>crm schema tables, scaffold, LeadLinkFactory</p>|
-| :-: | :- |
+|Category|Database|Backend API|Frontend UI|Overall|
+| :- | :- | :- | :- | :- |
+|**Auth & Security**|100%|90%|60%|85%|
+|**Menu System**|100%|100%|90%|95%|
+|**Theme System**|100%|90%|75%|85%|
+|**UI Framework**|N/A|N/A|70%|70%|
+|**Infrastructure**|N/A|75%|N/A|75%|
+|**Employee**|100%|0%|30%|30%|
+|**CRM (Leads/Students/Apps)**|90%|0%|10%|20%|
+|**HR**|50%|0%|0%|10%|
+|**Payroll**|0%|0%|0%|0%|
+|**Attendance**|0%|0%|0%|0%|
+|**Reporting**|0%|0%|0%|0%|
+|**OVERALL PROJECT**|||**~28%**|
 
-|⏳|<p>**Lead CRUD Commands + Queries**</p><p>CreateLead, UpdateLead, GetLeadById, GetLeadGrid (LINQ pipeline)</p>|
-| :-: | :- |
+**Conclusion:** Strong foundation (infrastructure, auth, UI framework), but **business features are mostly missing**. Database schema exists but APIs are not implemented.
 
-|⏳|<p>**Lead Activities + Follow-up**</p><p>LeadActivity log, SignalR follow-up reminders</p>|
-| :-: | :- |
+---
 
-|⏳|<p>**Lead Assignment (Round-robin)**</p><p>Auto-assign service + manual assign endpoint</p>|
-| :-: | :- |
+# **6. NEXT STEPS — Priority Roadmap**
 
-|⏳|<p>**Lead → Student Conversion**</p><p>ConvertLeadToStudent command + domain event</p>|
-| :-: | :- |
+## **🔴 IMMEDIATE PRIORITY: Employee Module as Reference Implementation**
 
+**Goal:** Complete Employee module end-to-end as **reference pattern** for all future modules
 
-# **6. Next Step — Step 7.3 Detail**
+### **Phase 1B: Employee Module API (Current Focus)**
 
-|**🔄  Step 7.3: Theme Platform**|
-| :-: |
-
-## **6.1 কী কী করতে হবে**
-- themes.css — CSS variables per theme family + mode + density
-- theme-service.ts — runtime Kendo CSS link swap, no page reload
-- Theme picker UI — family selector + light/dark toggle + density toggle
-- DB persist — PUT /api/user/theme → UserProfiles.SettingsJson
-- Cookie set — server-side for no-flicker on page load
-- localStorage fallback — offline/fast load
-- OS prefers-color-scheme detection on first login
-- ThemeController.cs — API endpoint
-
-## **6.2 Files to Create in Step 7.3**
-
-|**File**|**Project**|**Purpose**|
+|Step|Task|Deliverable|
 | :- | :- | :- |
-|wwwroot/css/themes.css|bdDevCRM.Web|CSS variables for all theme combinations|
-|ts-src/services/theme-service.ts|bdDevCRM.Web|3-layer theme switch + persist|
-|Controllers/UserPreferenceController.cs|bdDevCRM.API|PUT /api/user/theme|
-|ts-src/components/theme-picker.ts|bdDevCRM.Web|Theme picker dropdown UI|
+|1B.1|Create Employee CQRS structure|CreateEmployeeCommand, UpdateEmployeeCommand, DeleteEmployeeCommand, GetEmployeeQuery, GetEmployeeGridQuery|
+|1B.2|Implement Employee validators|FluentValidation rules for all commands|
+|1B.3|Create Employee API controller|/api/employee endpoints (GET, POST, PUT, DELETE, /grid)|
+|1B.4|Wire employee.js to API|Replace mock data, test full CRUD workflow|
+|1B.5|Add permission checks|Authorize policies on Employee endpoints|
+|1B.6|Test & document|Full CRUD test, document as reference pattern|
 
-## **6.3 Theme System — 3 Layers**
+**Why Employee First?**
+- Frontend exists (21k lines of employee.js)
+- UI patterns already established
+- Once complete, becomes **copy-paste template** for:
+  - Lead module
+  - Student module
+  - Application module
+  - All other modules
 
-|**Layer**|**Options**|**Storage**|
-| :- | :- | :- |
-|Layer 1: Theme Family|default, bootstrap, material, fluent|UserProfiles.SettingsJson|
+## **🟡 PHASE 1C: CRM Lead Module (After Employee Complete)**
+
+|Step|Task|
+| :- | :- |
+|1C.1|Copy Employee CQRS pattern → Lead|
+|1C.2|Create Lead API controller|
+|1C.3|Implement leads.js (copy employee.js structure)|
+|1C.4|Add Lead Activities (timeline feature)|
+|1C.5|Add Lead Assignment (round-robin)|
+|1C.6|Add Lead→Student conversion|
+
+## **🟢 PHASE 2: Remaining CRM Features**
+- Student module
+- Application module
+- Course/Institute management
+- Document management
+
+## **🔵 PHASE 3: HR & Payroll**
+- HR Employee full features
+- Payroll processing
+- Attendance tracking
+
+## **⚪ DEFERRED: TypeScript Migration**
+- **Decision:** Stay with JavaScript
+- **Reason:** 170k lines working, solo developer, negative ROI
+- **Alternative:** Use TypeScript for NEW modules only (optional)
+
+---
+
+# **7. Configuration Reference**
 |Layer 2: Mode|light, dark|UserProfiles.SettingsJson + Cookie|
 |Layer 3: Density|compact, comfortable|UserProfiles.SettingsJson|
 
